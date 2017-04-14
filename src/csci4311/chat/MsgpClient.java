@@ -6,6 +6,7 @@ import java.util.List;
  * Communication interface to be used by user agents to send messages and requests.
  */
 public interface MsgpClient {
+
   /**
    * Encodes a user join request.
    *
@@ -41,7 +42,7 @@ public interface MsgpClient {
   List<String> groups();
 
   /**
-   * Requests the list of groups.
+   * Requests the users of a group.
    *
    * @param group group name
    * @return list of existing groups; null of none
@@ -49,7 +50,7 @@ public interface MsgpClient {
   List<String> users(String group);
 
   /**
-   * Requests the list of groups.
+   * Requests the history of a group.
    *
    * @param group group name
    * @return list of all messages sent to the group; null of none
