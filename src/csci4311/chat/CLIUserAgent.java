@@ -11,4 +11,9 @@ public class CLIUserAgent implements UserAgent {
   public void deliver(MsgpMessage message) {
 
   }
+
+  public static void main(String[] args) {
+    TextMsgpClient client = new TextMsgpClient();
+    client.join("Ted", "CSCI4311");
+  }
 }

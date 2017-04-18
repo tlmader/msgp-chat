@@ -96,9 +96,4 @@ public class TextMsgpClient implements MsgpClient {
       }
     }
   }
-
-  public static void main(String[] args) {
-    TextMsgpClient client = new TextMsgpClient();
-    client.join("Ted", "CSCI4311");
-  }
 }
