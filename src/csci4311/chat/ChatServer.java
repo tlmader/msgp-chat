@@ -19,12 +19,12 @@ public class ChatServer implements MessageServer {
     InetSocketAddress addr = new InetSocketAddress(PORT);
     HttpServer server = HttpServer.create(addr, 0);
     MsgpServer msgp = new TextMsgpServer();
-    server.createContext("/join/", msgp::join);
-    server.createContext("/leave/", msgp::leave);
-    server.createContext("/send/", msgp::send);
-    server.createContext("/groups/", msgp::groups);
-    server.createContext("/users/", msgp::users);
-    server.createContext("/history/", msgp::history);
+    server.createContext("/join", msgp::join);
+    server.createContext("/leave", msgp::leave);
+    server.createContext("/send", msgp::send);
+    server.createContext("/groups", msgp::groups);
+    server.createContext("/users", msgp::users);
+    server.createContext("/history", msgp::history);
     server.setExecutor(Executors.newCachedThreadPool());
     server.start();
     System.out.println("Server is listening on port " + PORT + "...");
