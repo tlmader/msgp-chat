@@ -12,7 +12,7 @@ public class TextMsgpClient implements MsgpClient {
   @Override
   public int join(String user, String group) {
     return 0;
-}
+  }
 
   @Override
   public int leave(String user, String group) {

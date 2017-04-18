@@ -2,6 +2,8 @@ package csci4311.chat;
 
 import com.sun.net.httpserver.HttpExchange;
 
+import java.io.IOException;
+
 /**
  * Defines methods for sending and receiving of encoded messages.
  *
@@ -14,14 +16,14 @@ public interface MsgpServer {
    *
    * @param exchange the HttpExchange
    */
-  void join(HttpExchange exchange);
+  void join(HttpExchange exchange) throws IOException;
 
   /**
    * Encodes a user leave request.
    *
    * @param exchange the HttpExchange
    */
-  void leave(HttpExchange exchange);
+  void leave(HttpExchange exchange) throws IOException;
 
   /**
    * Handles the sending of a message.
@@ -29,26 +31,26 @@ public interface MsgpServer {
    * @param exchange the HttpExchange
    */
 
-  void send(HttpExchange exchange);
+  void send(HttpExchange exchange) throws IOException;
 
   /**
    * Handles requests for the list of groups.
    *
    * @param exchange the HttpExchange
    */
-  void groups(HttpExchange exchange);
+  void groups(HttpExchange exchange) throws IOException;
 
   /**
    * Requests the list of groups.
    *
    * @param exchange the HttpExchange
    */
-  void users(HttpExchange exchange);
+  void users(HttpExchange exchange) throws IOException;
 
   /**
    * Requests the list of groups.
    *
    * @param exchange the HttpExchange
    */
-  void history(HttpExchange exchange);
+  void history(HttpExchange exchange) throws IOException;
 }
