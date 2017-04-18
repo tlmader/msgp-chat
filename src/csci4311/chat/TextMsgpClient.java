@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -17,15 +18,19 @@ public class TextMsgpClient implements MsgpClient {
 
   @Override
   public int join(String user, String group) {
-    ArrayList<String> list = new ArrayList<>();
-    list.add(user);
-    list.add(group);
-    post("join", list);
+    HashMap<String, String> body = new HashMap<>();
+    body.put("user", user);
+    body.put("group", group);
+    System.out.println(post("join", body));
     return 0;
   }
 
   @Override
   public int leave(String user, String group) {
+    HashMap<String, String> body = new HashMap<>();
+    body.put("user", user);
+    body.put("group", group);
+    System.out.println(post("leave", body));
     return 0;
   }
 
@@ -79,7 +84,7 @@ public class TextMsgpClient implements MsgpClient {
       StringBuilder response = new StringBuilder();
       while ((line = rd.readLine()) != null) {
         response.append(line);
-        response.append('\r');
+        response.append('\n');
       }
       rd.close();
       return response.toString();

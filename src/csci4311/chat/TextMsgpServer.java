@@ -4,8 +4,7 @@ import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Set;
 
 /**
@@ -19,25 +18,20 @@ public class TextMsgpServer implements MsgpServer {
 
   @Override
   public void join(HttpExchange exchange) throws IOException {
-    ObjectInputStream ois = new ObjectInputStream(exchange.getRequestBody());
-    List<String> list = new ArrayList<>();
-    try {
-      list = (List<String>) ois.readObject();
-    } catch (ClassNotFoundException e) {
-      e.printStackTrace();
-    }
-    server.join(list.get(0), list.get(1));
+    HashMap<String, String> list = getMapFromBody(exchange);
+    server.join(list.get("user"), list.get("group"));
     handle(exchange, "join");
   }
 
   @Override
   public void leave(HttpExchange exchange) throws IOException {
+    HashMap<String, String> list = getMapFromBody(exchange);
+    server.leave(list.get("user"), list.get("group"));
     handle(exchange, "leave");
   }
 
   @Override
   public void send(HttpExchange exchange) throws IOException {
-    handle(exchange, "send");
   }
 
   @Override
@@ -91,11 +85,12 @@ public class TextMsgpServer implements MsgpServer {
     }
   }
 
-  private String getBody(HttpExchange exchange) throws IOException {
-    BufferedReader body = new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
-    String bodyLine;
-    if ((bodyLine = body.readLine()) != null) {
-      return bodyLine;
+  private HashMap<String, String> getMapFromBody(HttpExchange exchange) throws IOException {
+    ObjectInputStream in = new ObjectInputStream(exchange.getRequestBody());
+    try {
+      return (HashMap<String, String>) in.readObject();
+    } catch (ClassNotFoundException e) {
+      e.printStackTrace();
     }
     return null;
   }

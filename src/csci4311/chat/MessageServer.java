@@ -20,7 +20,7 @@ public interface MessageServer {
    *
    * @param user the name of a user
    */
-  MsgpMessage leave(String user);
+  MsgpMessage leave(String user, String group);
 
   /**
    * Handles the sending of a message.

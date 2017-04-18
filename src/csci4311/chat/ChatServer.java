@@ -17,13 +17,17 @@ public class ChatServer implements MessageServer {
 
   @Override
   public MsgpMessage join(String user, String group) {
+    System.out.println("join()");
     System.out.println("User: " + user);
     System.out.println("Group: " + group);
     return null;
   }
 
   @Override
-  public MsgpMessage leave(String user) {
+  public MsgpMessage leave(String user, String group) {
+    System.out.println("leave()");
+    System.out.println("User: " + user);
+    System.out.println("Group: " + group);
     return null;
   }
 
