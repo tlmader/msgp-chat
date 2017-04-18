@@ -17,6 +17,8 @@ public class ChatServer implements MessageServer {
 
   @Override
   public MsgpMessage join(String user, String group) {
+    System.out.println("User: " + user);
+    System.out.println("Group: " + group);
     return null;
   }
 

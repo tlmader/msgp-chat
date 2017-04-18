@@ -1,11 +1,9 @@
 package csci4311.chat;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,7 +17,10 @@ public class TextMsgpClient implements MsgpClient {
 
   @Override
   public int join(String user, String group) {
-    post("join", user + "/" + group);
+    ArrayList<String> list = new ArrayList<>();
+    list.add(user);
+    list.add(group);
+    post("join", list);
     return 0;
   }
 
@@ -48,7 +49,7 @@ public class TextMsgpClient implements MsgpClient {
     return null;
   }
 
-  private String post(String route, String urlParameters) {
+  private String post(String route, Serializable obj) {
     URL url;
     HttpURLConnection connection = null;
     try {
@@ -58,7 +59,7 @@ public class TextMsgpClient implements MsgpClient {
       connection.setRequestMethod("POST");
       connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 
-      connection.setRequestProperty("Content-Length", "" + Integer.toString(urlParameters.getBytes().length));
+      connection.setRequestProperty("Content-Length", "" + Integer.toString(obj.toString().getBytes().length));
       connection.setRequestProperty("Content-Language", "en-US");
 
       connection.setUseCaches(false);
@@ -66,8 +67,8 @@ public class TextMsgpClient implements MsgpClient {
       connection.setDoOutput(true);
 
       // Send request
-      DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
-      wr.writeBytes(urlParameters);
+      ObjectOutputStream wr = new ObjectOutputStream(connection.getOutputStream());
+      wr.writeObject(obj);
       wr.flush();
       wr.close();
 
@@ -97,9 +98,7 @@ public class TextMsgpClient implements MsgpClient {
   }
 
   public static void main(String[] args) {
-    String targetURL = "http://localhost:8080/send";
-    String urlParameters = "test";
     TextMsgpClient client = new TextMsgpClient();
-    System.out.println(client.post(targetURL, urlParameters));
+    client.join("Ted", "CSCI4311");
   }
 }

@@ -3,10 +3,9 @@ package csci4311.chat;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -16,8 +15,18 @@ import java.util.Set;
  */
 public class TextMsgpServer implements MsgpServer {
 
+  ChatServer server = new ChatServer();
+
   @Override
   public void join(HttpExchange exchange) throws IOException {
+    ObjectInputStream ois = new ObjectInputStream(exchange.getRequestBody());
+    List<String> list = new ArrayList<>();
+    try {
+      list = (List<String>) ois.readObject();
+    } catch (ClassNotFoundException e) {
+      e.printStackTrace();
+    }
+    server.join(list.get(0), list.get(1));
     handle(exchange, "join");
   }
 
@@ -80,5 +89,14 @@ public class TextMsgpServer implements MsgpServer {
     while ((bodyLine = body.readLine()) != null) {
       response.println(bodyLine);
     }
+  }
+
+  private String getBody(HttpExchange exchange) throws IOException {
+    BufferedReader body = new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
+    String bodyLine;
+    if ((bodyLine = body.readLine()) != null) {
+      return bodyLine;
+    }
+    return null;
   }
 }
