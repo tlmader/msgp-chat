@@ -19,8 +19,7 @@ public class TextMsgpServer implements MsgpServer {
   @Override
   public void join(HttpExchange exchange) throws IOException {
     HashMap<String, String> list = getMapFromBody(exchange);
-    server.join(list.get("user"), list.get("group"));
-    handle(exchange, "join");
+    handle(exchange, "join", server.join(list.get("user"), list.get("group")));
   }
 
   @Override

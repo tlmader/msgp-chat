@@ -13,14 +13,14 @@ public interface MessageServer {
    * @param user  the name of a user
    * @param group the name of a group
    */
-  MsgpMessage join(String user, String group);
+  ResponseBody join(String user, String group);
 
   /**
    * Handles a user leave request.
    *
    * @param user the name of a user
    */
-  MsgpMessage leave(String user, String group);
+  ResponseBody leave(String user, String group);
 
   /**
    * Handles the sending of a message.
@@ -28,14 +28,14 @@ public interface MessageServer {
    * @param user    the name of a user
    * @param message the message to send
    */
-  MsgpMessage send(String user, String message);
+  ResponseBody send(String user, String message);
 
   /**
    * Handles a request for the list of groups.
    *
    * @param user the name of a user
    */
-  MsgpMessage groups(String user);
+  ResponseBody groups(String user);
 
   /**
    * Handles a request for the list of users of a group.
@@ -43,7 +43,7 @@ public interface MessageServer {
    * @param user  the name of a user
    * @param group the name of a group
    */
-  MsgpMessage users(String user, String group);
+  ResponseBody users(String user, String group);
 
   /**
    * Handles a request for the history of a group.
@@ -51,5 +51,5 @@ public interface MessageServer {
    * @param user  the name of a user
    * @param group the name of a group
    */
-  MsgpMessage history(String user, String group);
+  ResponseBody history(String user, String group);
 }

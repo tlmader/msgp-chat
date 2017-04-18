@@ -4,7 +4,6 @@ import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.HashMap;
 import java.util.concurrent.Executors;
 
 /**
@@ -17,18 +16,15 @@ public class ChatServer implements MessageServer {
   private static final int PORT = 8080;
 
   @Override
-  public MsgpMessage join(String user, String group) {
+  public ResponseBody join(String user, String group) {
     System.out.println("join()");
     System.out.println("User: " + user);
     System.out.println("Group: " + group);
-    HashMap<String, String> responseBody = new HashMap<>();
-    responseBody.put("code", "200");
-    responseBody.put("message", "200");
-    return null;
+    return new ResponseBody(200, "User " + user + " added to group " + group);
   }
 
   @Override
-  public MsgpMessage leave(String user, String group) {
+  public ResponseBody leave(String user, String group) {
     System.out.println("leave()");
     System.out.println("User: " + user);
     System.out.println("Group: " + group);
@@ -36,22 +32,22 @@ public class ChatServer implements MessageServer {
   }
 
   @Override
-  public MsgpMessage send(String user, String message) {
+  public ResponseBody send(String user, String message) {
     return null;
   }
 
   @Override
-  public MsgpMessage groups(String user) {
+  public ResponseBody groups(String user) {
     return null;
   }
 
   @Override
-  public MsgpMessage users(String user, String group) {
+  public ResponseBody users(String user, String group) {
     return null;
   }
 
   @Override
-  public MsgpMessage history(String user, String group) {
+  public ResponseBody history(String user, String group) {
     return null;
   }
 
