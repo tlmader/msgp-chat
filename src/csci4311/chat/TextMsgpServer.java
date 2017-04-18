@@ -49,6 +49,15 @@ public class TextMsgpServer implements MsgpServer {
     handle(exchange, "history");
   }
 
+  private void handle(HttpExchange exchange, String context, ResponseBody body) throws IOException {
+    Headers responseHeaders = exchange.getResponseHeaders();
+    responseHeaders.set("Content-Type", "text/plain");
+    exchange.sendResponseHeaders(body.code, 0);
+    PrintStream response = new PrintStream(exchange.getResponseBody());
+    response.println(body.toString());
+    response.close();
+  }
+
   private void handle(HttpExchange exchange, String context) throws IOException {
 
     String requestMethod = exchange.getRequestMethod();

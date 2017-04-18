@@ -4,6 +4,7 @@ import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.HashMap;
 import java.util.concurrent.Executors;
 
 /**
@@ -20,6 +21,9 @@ public class ChatServer implements MessageServer {
     System.out.println("join()");
     System.out.println("User: " + user);
     System.out.println("Group: " + group);
+    HashMap<String, String> responseBody = new HashMap<>();
+    responseBody.put("code", "200");
+    responseBody.put("message", "200");
     return null;
   }
 
