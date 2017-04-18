@@ -26,7 +26,7 @@ public interface MsgpServer {
   void leave(HttpExchange exchange) throws IOException;
 
   /**
-   * Handles the sending of a message.
+   * Encodes the sending of a message.
    *
    * @param exchange the HttpExchange
    */
@@ -34,21 +34,21 @@ public interface MsgpServer {
   void send(HttpExchange exchange) throws IOException;
 
   /**
-   * Handles requests for the list of groups.
+   * Encodes requests for the list of groups.
    *
    * @param exchange the HttpExchange
    */
   void groups(HttpExchange exchange) throws IOException;
 
   /**
-   * Requests the list of groups.
+   * Encodes requests for the list users of a group.
    *
    * @param exchange the HttpExchange
    */
   void users(HttpExchange exchange) throws IOException;
 
   /**
-   * Requests the list of groups.
+   * Encodes requests for the history of a group.
    *
    * @param exchange the HttpExchange
    */

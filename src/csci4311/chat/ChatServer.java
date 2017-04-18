@@ -15,6 +15,36 @@ public class ChatServer implements MessageServer {
 
   private static final int PORT = 8080;
 
+  @Override
+  public MsgpMessage join(String user, String group) {
+    return null;
+  }
+
+  @Override
+  public MsgpMessage leave(String user) {
+    return null;
+  }
+
+  @Override
+  public MsgpMessage send(String user, String message) {
+    return null;
+  }
+
+  @Override
+  public MsgpMessage groups(String user) {
+    return null;
+  }
+
+  @Override
+  public MsgpMessage users(String user, String group) {
+    return null;
+  }
+
+  @Override
+  public MsgpMessage history(String user, String group) {
+    return null;
+  }
+
   public static void main(String[] args) throws IOException {
     InetSocketAddress addr = new InetSocketAddress(PORT);
     HttpServer server = HttpServer.create(addr, 0);
