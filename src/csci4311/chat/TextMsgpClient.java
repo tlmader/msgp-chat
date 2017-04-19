@@ -17,19 +17,28 @@ public class TextMsgpClient implements MsgpClient {
   private final String BASE_URL = "http://localhost:8080/";
 
   @Override
-  public int join(String user, String group) {
+  public String join(String user, String group) {
     HashMap<String, String> body = new HashMap<>();
     body.put("user", user);
     body.put("group", group);
-    return getResponseCode(createConnection("join", body));
+    int code = getResponseCode(createConnection("join", body));
+    if (code == 200) {
+      List<String> users = getResponseAsStrings(createConnection("users", group));
+      if (users == null) {
+        return "Error";
+      }
+      return "Joined #" + group + " with " + users.size() + " current members.";
+    }
+    return "Already a member of #" + group + ".";
   }
 
   @Override
-  public int leave(String user, String group) {
+  public String leave(String user, String group) {
     HashMap<String, String> body = new HashMap<>();
     body.put("user", user);
     body.put("group", group);
-    return getResponseCode(createConnection("leave", body));
+    int code = getResponseCode(createConnection("leave", body));
+    return code == 400 ? "Not a member of #" + group + "." : "";
   }
 
   @Override

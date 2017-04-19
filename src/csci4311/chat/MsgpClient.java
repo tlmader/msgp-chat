@@ -15,7 +15,7 @@ public interface MsgpClient {
    * @param group group name
    * @return reply code, as per the spec
    */
-  int join(String user, String group);
+  String join(String user, String group);
 
   /**
    * Encodes a user leave request.
@@ -24,7 +24,7 @@ public interface MsgpClient {
    * @param group group name
    * @return reply code, as per the spec
    */
-  int leave(String user, String group);
+  String leave(String user, String group);
 
   /**
    * Encodes the sending of a message.
