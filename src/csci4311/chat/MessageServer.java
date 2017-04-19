@@ -39,8 +39,10 @@ public interface MessageServer {
 
   /**
    * Handles a request for the list of users of a group.
+   *
+   * @param group the name of a group
    */
-  Set<String> users();
+  Set<String> users(String group);
 
   /**
    * Handles a request for the history of a group.

@@ -41,7 +41,7 @@ public class  TextMsgpServer implements MsgpServer {
 
   @Override
   public void users(HttpExchange exchange) throws IOException {
-    handle(exchange, server.users());
+    handle(exchange, server.users(getStringFromBody(exchange)));
   }
 
   @Override
@@ -114,6 +114,16 @@ public class  TextMsgpServer implements MsgpServer {
     while ((bodyLine = body.readLine()) != null) {
       response.println(bodyLine);
     }
+  }
+
+  private String getStringFromBody(HttpExchange exchange) throws IOException {
+    ObjectInputStream in = new ObjectInputStream(exchange.getRequestBody());
+    try {
+      return (String) in.readObject();
+    } catch (ClassNotFoundException e) {
+      e.printStackTrace();
+    }
+    return null;
   }
 
   private HashMap<String, String> getMapFromBody(HttpExchange exchange) throws IOException {

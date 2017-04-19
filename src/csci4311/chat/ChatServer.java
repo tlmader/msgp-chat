@@ -66,8 +66,8 @@ public class ChatServer implements MessageServer {
   }
 
   @Override
-  public Set<String> users() {
-    return userSet;
+  public Set<String> users(String group) {
+    return groupUsers.get(group);
   }
 
   @Override

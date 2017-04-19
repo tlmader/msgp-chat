@@ -18,8 +18,10 @@ public class CLIUserAgent implements UserAgent {
     TextMsgpClient client = new TextMsgpClient();
     out.println(client.join("tlmader", "general"));
     out.println(client.join("astrika", "general"));
+    out.println(client.join("hill", "programming"));
     out.println(client.join("tlmader", "programming"));
     out.println(client.groups());
     out.println(client.users("general"));
+    out.println(client.users("programming"));
   }
 }
