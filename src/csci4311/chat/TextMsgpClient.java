@@ -5,6 +5,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Implements the msgp protocol.
@@ -37,17 +38,37 @@ public class TextMsgpClient implements MsgpClient {
   }
 
   @Override
-  public List<String> groups() {
-    return null;
+  public String groups() {
+    return getResponseBody(createConnection("groups"));
   }
 
   @Override
-  public List<String> users(String group) {
+  public Set<String> users(String group) {
     return null;
   }
 
   @Override
   public List<MsgpMessage> history(String group) {
+    return null;
+  }
+
+  private HttpURLConnection createConnection(String route) {
+    URL url;
+    HttpURLConnection connection = null;
+    try {
+      url = new URL(BASE_URL + route);
+      connection = (HttpURLConnection) url.openConnection();
+      connection.setRequestMethod("GET");
+      connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+      connection.setRequestProperty("Content-Language", "en-US");
+
+      connection.setUseCaches(false);
+      connection.setDoInput(true);
+      connection.setDoOutput(true);
+      return connection;
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
     return null;
   }
 

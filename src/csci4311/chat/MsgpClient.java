@@ -1,6 +1,7 @@
 package csci4311.chat;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Communication interface to be used by user agents to send messages and requests.
@@ -39,7 +40,7 @@ public interface MsgpClient {
    *
    * @return existing groups; null of none
    */
-  List<String> groups();
+  String groups();
 
   /**
    * Requests the users of a group.
@@ -47,7 +48,7 @@ public interface MsgpClient {
    * @param group group name
    * @return list of existing groups; null of none
    */
-  List<String> users(String group);
+  Set<String> users(String group);
 
   /**
    * Requests the history of a group.

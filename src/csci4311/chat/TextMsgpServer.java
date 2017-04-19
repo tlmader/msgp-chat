@@ -14,28 +14,28 @@ import java.util.Set;
  */
 public class  TextMsgpServer implements MsgpServer {
 
-  ChatServer server = new ChatServer();
+  private ChatServer server = new ChatServer();
 
   @Override
   public void join(HttpExchange exchange) throws IOException {
     HashMap<String, String> list = getMapFromBody(exchange);
-    handle(exchange, "join", server.join(list.get("user"), list.get("group")));
+    handle(exchange, server.join(list.get("user"), list.get("group")));
   }
 
   @Override
   public void leave(HttpExchange exchange) throws IOException {
     HashMap<String, String> list = getMapFromBody(exchange);
-    handle(exchange, "leave", server.leave(list.get("user"), list.get("group")));
+    handle(exchange, server.leave(list.get("user"), list.get("group")));
   }
 
   @Override
   public void send(HttpExchange exchange) throws IOException {
-    handle(exchange, "send", server.send(getMessageFromBody(exchange)));
+    handle(exchange, server.send(getMessageFromBody(exchange)));
   }
 
   @Override
   public void groups(HttpExchange exchange) throws IOException {
-    handle(exchange, "groups");
+    handle(exchange, server.groups());
   }
 
   @Override
@@ -48,13 +48,39 @@ public class  TextMsgpServer implements MsgpServer {
     handle(exchange, "history");
   }
 
-  private void handle(HttpExchange exchange, String context, int code) throws IOException {
+  private void handle(HttpExchange exchange, int code) throws IOException {
     Headers responseHeaders = exchange.getResponseHeaders();
     responseHeaders.set("Content-Type", "text/plain");
     exchange.sendResponseHeaders(code, 0);
   }
 
-  private void handle(HttpExchange exchange, String context, ResponseBody body) throws IOException {
+  private void handle(HttpExchange exchange, Set<String> set) throws IOException {
+    Headers responseHeaders = exchange.getResponseHeaders();
+    responseHeaders.set("Content-Type", "text/plain");
+    int code = set.isEmpty() ? 201 : 200;
+    exchange.sendResponseHeaders(set.isEmpty() ? 201 : 200, 0);
+
+    PrintStream response = new PrintStream(exchange.getResponseBody());
+    response.print("msgp ");
+    switch (code) {
+      case 200:
+        response.println("200 OK");
+        break;
+      case 201:
+        response.println("201 No result");
+        break;
+      default:
+        response.println("400 Error");
+        break;
+    }
+    for (String s : set) {
+      response.println(s);
+    }
+    response.println();
+    response.close();
+  }
+
+  private void handle(HttpExchange exchange, ResponseBody body) throws IOException {
     Headers responseHeaders = exchange.getResponseHeaders();
     responseHeaders.set("Content-Type", "text/plain");
     exchange.sendResponseHeaders(body.code, 0);

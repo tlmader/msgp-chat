@@ -61,13 +61,13 @@ public class ChatServer implements MessageServer {
   }
 
   @Override
-  public ResponseBody groups(String user) {
-    return null;
+  public Set<String> groups() {
+    return groupUsers.keySet();
   }
 
   @Override
-  public ResponseBody users(String user, String group) {
-    return null;
+  public Set<String> users() {
+    return userSet;
   }
 
   @Override
@@ -82,7 +82,7 @@ public class ChatServer implements MessageServer {
     server.createContext("/join", msgp::join);
     server.createContext("/leave", msgp::leave);
     server.createContext("/send", msgp::send);
-    server.createContext("/groupUsers", msgp::groups);
+    server.createContext("/groups", msgp::groups);
     server.createContext("/users", msgp::users);
     server.createContext("/history", msgp::history);
     server.setExecutor(Executors.newCachedThreadPool());

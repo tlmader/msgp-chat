@@ -1,5 +1,7 @@
 package csci4311.chat;
 
+import java.util.Set;
+
 /**
  * Defines methods for handling core functionality of maintaining users, groups, messages, etc.
  *
@@ -31,18 +33,13 @@ public interface MessageServer {
 
   /**
    * Handles a request for the list of groups.
-   *
-   * @param user the name of a user
    */
-  ResponseBody groups(String user);
+  Set<String> groups();
 
   /**
    * Handles a request for the list of users of a group.
-   *
-   * @param user  the name of a user
-   * @param group the name of a group
    */
-  ResponseBody users(String user, String group);
+  Set<String> users();
 
   /**
    * Handles a request for the history of a group.
