@@ -12,6 +12,7 @@ import java.util.Set;
  *
  * @author Ted Mader
  */
+@SuppressWarnings("unchecked")
 public class  TextMsgpServer implements MsgpServer {
 
   private ChatServer server = new ChatServer();
@@ -19,13 +20,13 @@ public class  TextMsgpServer implements MsgpServer {
   @Override
   public void join(HttpExchange exchange) throws IOException {
     HashMap<String, String> list = getMapFromBody(exchange);
-    handle(exchange, server.join(list.get("user"), list.get("group")));
+    handle(exchange, list != null ? server.join(list.get("user"), list.get("group")) : 400);
   }
 
   @Override
   public void leave(HttpExchange exchange) throws IOException {
     HashMap<String, String> list = getMapFromBody(exchange);
-    handle(exchange, server.leave(list.get("user"), list.get("group")));
+    handle(exchange, list != null ? server.leave(list.get("user"), list.get("group")) : 400);
   }
 
   @Override
@@ -40,7 +41,7 @@ public class  TextMsgpServer implements MsgpServer {
 
   @Override
   public void users(HttpExchange exchange) throws IOException {
-    handle(exchange, "users");
+    handle(exchange, server.users());
   }
 
   @Override
@@ -80,17 +81,7 @@ public class  TextMsgpServer implements MsgpServer {
     response.close();
   }
 
-  private void handle(HttpExchange exchange, ResponseBody body) throws IOException {
-    Headers responseHeaders = exchange.getResponseHeaders();
-    responseHeaders.set("Content-Type", "text/plain");
-    exchange.sendResponseHeaders(body.code, 0);
-    PrintStream response = new PrintStream(exchange.getResponseBody());
-    response.println(body.toString());
-    response.close();
-  }
-
   private void handle(HttpExchange exchange, String context) throws IOException {
-
     String requestMethod = exchange.getRequestMethod();
 
     Headers responseHeaders = exchange.getResponseHeaders();

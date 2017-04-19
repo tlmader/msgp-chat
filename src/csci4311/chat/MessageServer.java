@@ -1,5 +1,6 @@
 package csci4311.chat;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -47,5 +48,5 @@ public interface MessageServer {
    * @param user  the name of a user
    * @param group the name of a group
    */
-  ResponseBody history(String user, String group);
+  List<MsgpMessage> history(String user, String group);
 }

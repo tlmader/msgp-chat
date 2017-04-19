@@ -71,7 +71,7 @@ public class ChatServer implements MessageServer {
   }
 
   @Override
-  public ResponseBody history(String user, String group) {
+  public List<MsgpMessage> history(String user, String group) {
     return null;
   }
 
