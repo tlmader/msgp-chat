@@ -18,9 +18,11 @@ public class ChatServer implements MessageServer {
   private static final int PORT = 8080;
 
   HashMap<String, HashSet<String>> groups = new HashMap<>();
+  HashSet<String> users = new HashSet<>();
 
   @Override
   public int join(String user, String group) {
+    users.add(user);
     if (!groups.containsKey(group)) {
       groups.put(group, new HashSet<>());
     }
@@ -42,8 +44,16 @@ public class ChatServer implements MessageServer {
   }
 
   @Override
-  public ResponseBody send(String user, String message) {
-    return null;
+  public int send(MsgpMessage message) {
+    for (String to : message.getTo()) {
+      if ((to.startsWith("@") && !users.contains(to)) || (to.startsWith("#") && !groups.containsKey(to))) {
+        return 400;
+      }
+    }
+    for (String to : message.getTo()) {
+      
+    }
+    return 200;
   }
 
   @Override

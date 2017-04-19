@@ -25,10 +25,9 @@ public interface MessageServer {
   /**
    * Handles the sending of a message.
    *
-   * @param user    the name of a user
    * @param message the message to send
    */
-  ResponseBody send(String user, String message);
+  int send(MsgpMessage message);
 
   /**
    * Handles a request for the list of groups.

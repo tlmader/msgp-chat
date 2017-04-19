@@ -1,11 +1,12 @@
 package csci4311.chat;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Encodes a text message.
  */
-public class MsgpMessage {
+public class MsgpMessage implements Serializable {
   private String from, message;
   private List<String> to;
 

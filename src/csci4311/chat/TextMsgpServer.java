@@ -30,6 +30,7 @@ public class  TextMsgpServer implements MsgpServer {
 
   @Override
   public void send(HttpExchange exchange) throws IOException {
+    handle(exchange, "leave", server.send(getMessageFromBody(exchange))));
   }
 
   @Override
@@ -102,6 +103,16 @@ public class  TextMsgpServer implements MsgpServer {
     ObjectInputStream in = new ObjectInputStream(exchange.getRequestBody());
     try {
       return (HashMap<String, String>) in.readObject();
+    } catch (ClassNotFoundException e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
+
+  private MsgpMessage getMessageFromBody(HttpExchange exchange) throws IOException {
+    ObjectInputStream in = new ObjectInputStream(exchange.getRequestBody());
+    try {
+      return (MsgpMessage) in.readObject();
     } catch (ClassNotFoundException e) {
       e.printStackTrace();
     }
