@@ -39,11 +39,11 @@ public class TextMsgpClient implements MsgpClient {
 
   @Override
   public String groups() {
-    List<String> groups = getResponseAsList(createConnection("groups"));
+    List<String> groups = getResponseAsStrings(createConnection("groups"));
     StringBuilder out = new StringBuilder();
     if (groups != null) {
       for (String group : groups) {
-        List<String> users = getResponseAsList(createConnection("users", group));
+        List<String> users = getResponseAsStrings(createConnection("users", group));
         if (users == null) {
           continue;
         }
@@ -59,7 +59,7 @@ public class TextMsgpClient implements MsgpClient {
 
   @Override
   public String users(String group) {
-    List<String> users = getResponseAsList(createConnection("users", group));
+    List<String> users = getResponseAsStrings(createConnection("users", group));
     StringBuilder out = new StringBuilder();
     if (users != null) {
       for (String user : users) {
@@ -73,7 +73,24 @@ public class TextMsgpClient implements MsgpClient {
 
   @Override
   public String history(String group) {
-    return getResponseBody(createConnection("history", group));
+    List<String> lines = getResponseAsStrings(createConnection("history", group));
+    StringBuilder out = new StringBuilder();
+    if (lines != null) {
+      for (String line : lines) {
+        if (line.startsWith("to: ") || line.length() == 0) {
+          continue;
+        }
+        if (line.startsWith("from: ")) {
+          out.append("[")
+              .append(line.substring(6))
+              .append("] ");
+        } else {
+          out.append(line)
+              .append("\n");
+        }
+      }
+    }
+    return out.toString();
   }
 
   private HttpURLConnection createConnection(String route) {
@@ -126,8 +143,7 @@ public class TextMsgpClient implements MsgpClient {
 
   private String getResponseBody(HttpURLConnection connection) {
     try {
-      InputStream is = connection.getInputStream();
-      BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+      BufferedReader rd = new BufferedReader(new InputStreamReader(connection.getInputStream()));
       String line;
       StringBuilder response = new StringBuilder();
       while ((line = rd.readLine()) != null) {
@@ -146,10 +162,9 @@ public class TextMsgpClient implements MsgpClient {
     }
   }
 
-  private List<String> getResponseAsList(HttpURLConnection connection) {
+  private List<String> getResponseAsStrings(HttpURLConnection connection) {
     try {
-      InputStream is = connection.getInputStream();
-      BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+      BufferedReader rd = new BufferedReader(new InputStreamReader(connection.getInputStream()));
       List<String> response = new ArrayList<>();
       String line;
       while ((line = rd.readLine()) != null) {
