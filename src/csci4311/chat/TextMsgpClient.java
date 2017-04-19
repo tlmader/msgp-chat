@@ -72,8 +72,8 @@ public class TextMsgpClient implements MsgpClient {
   }
 
   @Override
-  public List<MsgpMessage> history(String group) {
-    return null;
+  public String history(String group) {
+    return getResponseBody(createConnection("history", group));
   }
 
   private HttpURLConnection createConnection(String route) {

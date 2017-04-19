@@ -1,5 +1,9 @@
 package csci4311.chat;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import static java.lang.System.out;
 
 /**
@@ -23,5 +27,12 @@ public class CLIUserAgent implements UserAgent {
     out.println(client.groups());
     out.println(client.users("general"));
     out.println(client.users("programming"));
+    List<String> to = new ArrayList<>();
+    to.add("#general");
+    to.add("#programming");
+    out.println(client.send(new MsgpMessage("ted", to, "I'm pooping.")));
+    out.println(client.send(new MsgpMessage("astrika", to, "You're a poopster!")));
+    out.println(client.history("general"));
+    out.println(client.history("programming"));
   }
 }

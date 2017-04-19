@@ -5,6 +5,7 @@ import com.sun.net.httpserver.HttpExchange;
 
 import java.io.*;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -46,7 +47,8 @@ public class  TextMsgpServer implements MsgpServer {
 
   @Override
   public void history(HttpExchange exchange) throws IOException {
-    handle(exchange, server.history(getStringFromBody(exchange)));
+    String group = getStringFromBody(exchange);
+    handle(exchange, server.history(group), group);
   }
 
   private void handle(HttpExchange exchange, int code) throws IOException {
@@ -57,25 +59,47 @@ public class  TextMsgpServer implements MsgpServer {
     Headers responseHeaders = exchange.getResponseHeaders();
     responseHeaders.set("Content-Type", "text/plain");
     int code = set.isEmpty() ? 201 : 200;
-    exchange.sendResponseHeaders(set.isEmpty() ? 201 : 200, 0);
+    exchange.sendResponseHeaders(code, 0);
 
     PrintStream response = new PrintStream(exchange.getResponseBody());
     response.print("msgp ");
-    switch (code) {
-      case 200:
-        response.println("200 OK");
-        break;
-      case 201:
-        response.println("201 No result");
-        break;
-      default:
-        response.println("400 Error");
-        break;
-    }
+    printReplyCode(response, code);
     for (String s : set) {
       response.println(s);
     }
     response.close();
+  }
+
+  private void handle(HttpExchange exchange, List<MsgpMessage> messages, String group) throws IOException {
+    Headers responseHeaders = exchange.getResponseHeaders();
+    responseHeaders.set("Content-Type", "text/plain");
+    int code = messages.isEmpty() ? 201 : 200;
+    exchange.sendResponseHeaders(code, 0);
+
+    PrintStream response = new PrintStream(exchange.getResponseBody());
+    printReplyCode(response, code);
+    for (MsgpMessage m : messages) {
+      response.println("msgp send");
+      response.println("from: " + m.getFrom());
+      response.println("to: " + group);
+      response.println("\n" + m.getMessage() + "\n");
+    }
+    response.close();
+  }
+
+  private void printReplyCode(PrintStream response, int code) {
+    response.print("msgp " + code);
+    switch (code) {
+      case 200:
+        response.println(" OK");
+        break;
+      case 201:
+        response.println(" No result");
+        break;
+      case 400:
+        response.println(" Error");
+        break;
+    }
   }
 
   private String getStringFromBody(HttpExchange exchange) throws IOException {

@@ -17,7 +17,7 @@ public class ChatServer implements MessageServer {
   private static final int PORT = 8080;
 
   private Map<String, HashSet<String>> groupUsers = new HashMap<>();
-  private Map<String, List<String>> groupHistory = new HashMap<>();
+  private Map<String, List<MsgpMessage>> groupHistory = new HashMap<>();
   private Set<String> userSet = new HashSet<>();
 
   @Override
@@ -54,7 +54,7 @@ public class ChatServer implements MessageServer {
     }
     for (String to : message.getTo()) {
       if (to.startsWith("#")) {
-        groupHistory.get(to.substring(1)).add(message.getMessage());
+        groupHistory.get(to.substring(1)).add(message);
       }
     }
     return 200;
@@ -72,7 +72,7 @@ public class ChatServer implements MessageServer {
 
   @Override
   public List<MsgpMessage> history(String group) {
-    return null;
+    return groupHistory.get(group);
   }
 
   public static void main(String[] args) throws IOException {

@@ -56,5 +56,5 @@ public interface MsgpClient {
    * @param group group name
    * @return list of all messages sent to the group; null of none
    */
-  List<MsgpMessage> history(String group);
+  String history(String group);
 }
