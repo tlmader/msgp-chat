@@ -46,12 +46,10 @@ public class  TextMsgpServer implements MsgpServer {
 
   @Override
   public void history(HttpExchange exchange) throws IOException {
-    handle(exchange, "history");
+    handle(exchange, server.history(getStringFromBody(exchange)));
   }
 
   private void handle(HttpExchange exchange, int code) throws IOException {
-    Headers responseHeaders = exchange.getResponseHeaders();
-    responseHeaders.set("Content-Type", "text/plain");
     exchange.sendResponseHeaders(code, 0);
   }
 
@@ -78,41 +76,6 @@ public class  TextMsgpServer implements MsgpServer {
       response.println(s);
     }
     response.close();
-  }
-
-  private void handle(HttpExchange exchange, String context) throws IOException {
-    String requestMethod = exchange.getRequestMethod();
-
-    Headers responseHeaders = exchange.getResponseHeaders();
-    responseHeaders.set("Content-Type", "text/plain");
-    exchange.sendResponseHeaders(200, 0);
-
-    PrintStream response = new PrintStream(exchange.getResponseBody());
-    response.println("context: /" + context + "; method: " + requestMethod
-        + " uri: " + exchange.getRequestURI() + " path: " +
-        exchange.getHttpContext().getPath());
-    printHeaders(exchange, response);
-    if (requestMethod.equalsIgnoreCase("POST")) {
-      response.println("=== body ===");
-      printBody(exchange, response);
-    }
-    response.close();
-  }
-
-  private void printHeaders(HttpExchange exchange, PrintStream response) {
-    Headers requestHeaders = exchange.getRequestHeaders();
-    Set<String> keySet = requestHeaders.keySet();
-    for (String key : keySet) {
-      response.println(key + " = " + requestHeaders.get(key));
-    }
-  }
-
-  private void printBody(HttpExchange exchange, PrintStream response) throws IOException {
-    BufferedReader body = new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
-    String bodyLine;
-    while ((bodyLine = body.readLine()) != null) {
-      response.println(bodyLine);
-    }
   }
 
   private String getStringFromBody(HttpExchange exchange) throws IOException {
