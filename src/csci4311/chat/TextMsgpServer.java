@@ -12,7 +12,7 @@ import java.util.Set;
  *
  * @author Ted Mader
  */
-public class TextMsgpServer implements MsgpServer {
+public class  TextMsgpServer implements MsgpServer {
 
   ChatServer server = new ChatServer();
 
@@ -26,7 +26,7 @@ public class TextMsgpServer implements MsgpServer {
   public void leave(HttpExchange exchange) throws IOException {
     HashMap<String, String> list = getMapFromBody(exchange);
     server.leave(list.get("user"), list.get("group"));
-    handle(exchange, "leave");
+    handle(exchange, "leave", server.leave(list.get("user"), list.get("group")));
   }
 
   @Override
@@ -46,6 +46,14 @@ public class TextMsgpServer implements MsgpServer {
   @Override
   public void history(HttpExchange exchange) throws IOException {
     handle(exchange, "history");
+  }
+
+  private void handle(HttpExchange exchange, String context, int code) throws IOException {
+    Headers responseHeaders = exchange.getResponseHeaders();
+    responseHeaders.set("Content-Type", "text/plain");
+    exchange.sendResponseHeaders(code, 0);
+    PrintStream response = new PrintStream(exchange.getResponseBody());
+    response.close();
   }
 
   private void handle(HttpExchange exchange, String context, ResponseBody body) throws IOException {

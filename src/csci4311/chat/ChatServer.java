@@ -28,7 +28,7 @@ public class ChatServer implements MessageServer {
     System.out.println("leave()");
     System.out.println("User: " + user);
     System.out.println("Group: " + group);
-    return null;
+    return new ResponseBody(200, "User " + user + " removed from group " + group);
   }
 
   @Override

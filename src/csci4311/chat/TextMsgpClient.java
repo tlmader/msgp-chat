@@ -3,7 +3,6 @@ package csci4311.chat;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -21,8 +20,7 @@ public class TextMsgpClient implements MsgpClient {
     HashMap<String, String> body = new HashMap<>();
     body.put("user", user);
     body.put("group", group);
-    System.out.println(post("join", body));
-    return 0;
+    return getResponseCode(createConnection("join", body));
   }
 
   @Override
@@ -30,8 +28,7 @@ public class TextMsgpClient implements MsgpClient {
     HashMap<String, String> body = new HashMap<>();
     body.put("user", user);
     body.put("group", group);
-    System.out.println(post("leave", body));
-    return 0;
+    return getResponseCode(createConnection("leave", body));
   }
 
   @Override
@@ -54,11 +51,10 @@ public class TextMsgpClient implements MsgpClient {
     return null;
   }
 
-  private String post(String route, Serializable obj) {
+  private HttpURLConnection createConnection(String route, Serializable obj) {
     URL url;
     HttpURLConnection connection = null;
     try {
-      // Create connection
       url = new URL(BASE_URL + route);
       connection = (HttpURLConnection) url.openConnection();
       connection.setRequestMethod("POST");
@@ -76,8 +72,24 @@ public class TextMsgpClient implements MsgpClient {
       wr.writeObject(obj);
       wr.flush();
       wr.close();
+      return connection;
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
 
-      // Get Response
+  private int getResponseCode(HttpURLConnection connection) {
+    try {
+      return connection.getResponseCode();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return 0;
+  }
+
+  private String getResponseBody(HttpURLConnection connection) {
+    try {
       InputStream is = connection.getInputStream();
       BufferedReader rd = new BufferedReader(new InputStreamReader(is));
       String line;

@@ -1,5 +1,7 @@
 package csci4311.chat;
 
+import static java.lang.System.out;
+
 /**
  * Implements user interaction.
  *
@@ -14,7 +16,7 @@ public class CLIUserAgent implements UserAgent {
 
   public static void main(String[] args) {
     TextMsgpClient client = new TextMsgpClient();
-    client.join("Ted", "CSCI4311");
-    client.leave("Ted", "CSCI4311");
+    out.println(client.join("Ted", "CSCI4311"));
+    out.println(client.leave("Ted", "CSCI4311"));
   }
 }
