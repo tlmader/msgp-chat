@@ -46,6 +46,9 @@ public class ChatServer implements MessageServer {
 
   @Override
   public int send(MsgpMessage message) {
+    if (!userSet.contains(message.getFrom())) {
+      return 400;
+    }
     for (String to : message.getTo()) {
       if ((to.startsWith("@") && !userSet.contains(to.substring(1))) ||
           (to.startsWith("#") && !groupUsers.containsKey(to.substring(1)))) {
