@@ -5,7 +5,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Implements the msgp protocol.
@@ -14,6 +13,7 @@ import java.util.Set;
  */
 public class TextMsgpClient implements MsgpClient {
 
+  @SuppressWarnings("FieldCanBeLocal")
   private final String BASE_URL = "http://localhost:8080/";
 
   @Override
@@ -43,8 +43,8 @@ public class TextMsgpClient implements MsgpClient {
   }
 
   @Override
-  public Set<String> users(String group) {
-    return null;
+  public String users(String group) {
+    return getResponseBody(createConnection("users", group));
   }
 
   @Override
@@ -61,43 +61,30 @@ public class TextMsgpClient implements MsgpClient {
       connection.setRequestMethod("GET");
       connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
       connection.setRequestProperty("Content-Language", "en-US");
-
       connection.setUseCaches(false);
       connection.setDoInput(true);
-      connection.setDoOutput(true);
-      return connection;
     } catch (IOException e) {
       e.printStackTrace();
     }
-    return null;
+    return connection;
   }
 
   private HttpURLConnection createConnection(String route, Serializable obj) {
-    URL url;
-    HttpURLConnection connection = null;
+    HttpURLConnection connection = createConnection(route);
+    if (connection == null) {
+      return null;
+    }
     try {
-      url = new URL(BASE_URL + route);
-      connection = (HttpURLConnection) url.openConnection();
-      connection.setRequestMethod("POST");
-      connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-
       connection.setRequestProperty("Content-Length", "" + Integer.toString(obj.toString().getBytes().length));
-      connection.setRequestProperty("Content-Language", "en-US");
-
-      connection.setUseCaches(false);
-      connection.setDoInput(true);
       connection.setDoOutput(true);
-
-      // Send request
       ObjectOutputStream wr = new ObjectOutputStream(connection.getOutputStream());
       wr.writeObject(obj);
       wr.flush();
       wr.close();
-      return connection;
     } catch (IOException e) {
       e.printStackTrace();
     }
-    return null;
+    return connection;
   }
 
   private int getResponseCode(HttpURLConnection connection) {
@@ -105,8 +92,12 @@ public class TextMsgpClient implements MsgpClient {
       return connection.getResponseCode();
     } catch (IOException e) {
       e.printStackTrace();
+      return 0;
+    } finally {
+      if (connection != null) {
+        connection.disconnect();
+      }
     }
-    return 0;
   }
 
   private String getResponseBody(HttpURLConnection connection) {
@@ -123,12 +114,9 @@ public class TextMsgpClient implements MsgpClient {
       return response.toString();
 
     } catch (Exception e) {
-
       e.printStackTrace();
       return null;
-
     } finally {
-
       if (connection != null) {
         connection.disconnect();
       }

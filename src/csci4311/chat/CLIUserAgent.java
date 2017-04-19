@@ -20,5 +20,6 @@ public class CLIUserAgent implements UserAgent {
     out.println(client.join("astrika", "general"));
     out.println(client.join("tlmader", "programming"));
     out.println(client.groups());
+    out.println(client.users("general"));
   }
 }

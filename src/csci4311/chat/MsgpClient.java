@@ -48,7 +48,7 @@ public interface MsgpClient {
    * @param group group name
    * @return list of existing groups; null of none
    */
-  Set<String> users(String group);
+  String users(String group);
 
   /**
    * Requests the history of a group.
