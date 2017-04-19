@@ -3,6 +3,7 @@ package csci4311.chat;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -13,7 +14,6 @@ import java.util.List;
  */
 public class TextMsgpClient implements MsgpClient {
 
-  @SuppressWarnings("FieldCanBeLocal")
   private final String BASE_URL = "http://localhost:8080/";
 
   @Override
@@ -39,12 +39,36 @@ public class TextMsgpClient implements MsgpClient {
 
   @Override
   public String groups() {
-    return getResponseBody(createConnection("groups"));
+    List<String> groups = getResponseAsList(createConnection("groups"));
+    StringBuilder out = new StringBuilder();
+    if (groups != null) {
+      for (String group : groups) {
+        List<String> users = getResponseAsList(createConnection("users", group));
+        if (users == null) {
+          continue;
+        }
+        out.append("#")
+            .append(group)
+            .append(" has ")
+            .append(users.size())
+            .append(" members\n");
+      }
+    }
+    return out.toString();
   }
 
   @Override
   public String users(String group) {
-    return getResponseBody(createConnection("users", group));
+    List<String> users = getResponseAsList(createConnection("users", group));
+    StringBuilder out = new StringBuilder();
+    if (users != null) {
+      for (String user : users) {
+        out.append("@")
+            .append(user)
+            .append("\n");
+      }
+    }
+    return out.toString();
   }
 
   @Override
@@ -107,11 +131,34 @@ public class TextMsgpClient implements MsgpClient {
       String line;
       StringBuilder response = new StringBuilder();
       while ((line = rd.readLine()) != null) {
-        response.append(line);
-        response.append('\n');
+        response.append(line).append('\n');
       }
       rd.close();
       return response.toString();
+
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    } finally {
+      if (connection != null) {
+        connection.disconnect();
+      }
+    }
+  }
+
+  private List<String> getResponseAsList(HttpURLConnection connection) {
+    try {
+      InputStream is = connection.getInputStream();
+      BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+      List<String> response = new ArrayList<>();
+      String line;
+      while ((line = rd.readLine()) != null) {
+        if (line.startsWith("msgp")) {
+          continue;
+        }
+        response.add(line);
+      }
+      return response;
 
     } catch (Exception e) {
       e.printStackTrace();

@@ -47,8 +47,7 @@ public interface MessageServer {
   /**
    * Handles a request for the history of a group.
    *
-   * @param user  the name of a user
    * @param group the name of a group
    */
-  List<MsgpMessage> history(String user, String group);
+  List<MsgpMessage> history(String group);
 }

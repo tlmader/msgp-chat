@@ -77,7 +77,6 @@ public class  TextMsgpServer implements MsgpServer {
     for (String s : set) {
       response.println(s);
     }
-    response.println();
     response.close();
   }
 
