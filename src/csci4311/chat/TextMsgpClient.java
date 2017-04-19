@@ -33,7 +33,7 @@ public class TextMsgpClient implements MsgpClient {
 
   @Override
   public int send(MsgpMessage message) {
-    return getResponseCode(createConnection("leave", message));
+    return getResponseCode(createConnection("send", message));
   }
 
   @Override

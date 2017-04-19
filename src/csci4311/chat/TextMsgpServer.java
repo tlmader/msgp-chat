@@ -30,7 +30,7 @@ public class  TextMsgpServer implements MsgpServer {
 
   @Override
   public void send(HttpExchange exchange) throws IOException {
-    handle(exchange, "leave", server.send(getMessageFromBody(exchange))));
+    handle(exchange, "send", server.send(getMessageFromBody(exchange)));
   }
 
   @Override

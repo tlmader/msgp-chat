@@ -4,12 +4,11 @@ import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 import java.util.concurrent.Executors;
 
 /**
- * Implements methods for handling core functionality of maintaining users, groups, messages, etc.
+ * Implements methods for handling core functionality of maintaining users, groupUsers, messages, etc.
  *
  * @author Ted Mader
  */
@@ -17,16 +16,18 @@ public class ChatServer implements MessageServer {
 
   private static final int PORT = 8080;
 
-  HashMap<String, HashSet<String>> groups = new HashMap<>();
-  HashSet<String> users = new HashSet<>();
+  private Map<String, HashSet<String>> groupUsers = new HashMap<>();
+  private Map<String, List<String>> groupHistory = new HashMap<>();
+  private Set<String> userSet = new HashSet<>();
 
   @Override
   public int join(String user, String group) {
-    users.add(user);
-    if (!groups.containsKey(group)) {
-      groups.put(group, new HashSet<>());
+    userSet.add(user);
+    if (!groupUsers.containsKey(group)) {
+      groupUsers.put(group, new HashSet<>());
+      groupHistory.put(group, new ArrayList<>());
     }
-    if (groups.get(group).add(user)) {
+    if (groupUsers.get(group).add(user)) {
       return 200;
     }
     return 201;
@@ -34,10 +35,10 @@ public class ChatServer implements MessageServer {
 
   @Override
   public int leave(String user, String group) {
-    if (!groups.containsKey(group)) {
+    if (!groupUsers.containsKey(group)) {
       return 400;
     }
-    if (groups.get(group).remove(user)) {
+    if (groupUsers.get(group).remove(user)) {
       return 200;
     }
     return 201;
@@ -46,12 +47,15 @@ public class ChatServer implements MessageServer {
   @Override
   public int send(MsgpMessage message) {
     for (String to : message.getTo()) {
-      if ((to.startsWith("@") && !users.contains(to)) || (to.startsWith("#") && !groups.containsKey(to))) {
+      if ((to.startsWith("@") && !userSet.contains(to.substring(1))) ||
+          (to.startsWith("#") && !groupUsers.containsKey(to.substring(1)))) {
         return 400;
       }
     }
     for (String to : message.getTo()) {
-      
+      if (to.startsWith("#")) {
+        groupHistory.get(to.substring(1)).add(message.getMessage());
+      }
     }
     return 200;
   }
@@ -78,7 +82,7 @@ public class ChatServer implements MessageServer {
     server.createContext("/join", msgp::join);
     server.createContext("/leave", msgp::leave);
     server.createContext("/send", msgp::send);
-    server.createContext("/groups", msgp::groups);
+    server.createContext("/groupUsers", msgp::groups);
     server.createContext("/users", msgp::users);
     server.createContext("/history", msgp::history);
     server.setExecutor(Executors.newCachedThreadPool());
