@@ -42,13 +42,23 @@ public class  TextMsgpServer implements MsgpServer {
 
   @Override
   public void users(HttpExchange exchange) throws IOException {
-    handle(exchange, server.users(getStringFromBody(exchange)));
+    Set<String> users = server.users(getStringFromBody(exchange));
+    if (users == null) {
+      handle(exchange, 400);
+    } else {
+      handle(exchange, users);
+    }
   }
 
   @Override
   public void history(HttpExchange exchange) throws IOException {
     String group = getStringFromBody(exchange);
-    handle(exchange, server.history(group), group);
+    List<MsgpMessage> messages = server.history(group);
+    if (messages == null) {
+      handle(exchange, 400);
+    } else {
+      handle(exchange, messages, group);
+    }
   }
 
   private void handle(HttpExchange exchange, int code) throws IOException {

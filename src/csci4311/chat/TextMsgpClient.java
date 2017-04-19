@@ -53,8 +53,9 @@ public class TextMsgpClient implements MsgpClient {
             .append(users.size())
             .append(" members\n");
       }
+      return out.toString();
     }
-    return out.toString();
+    return "There are currently no groups.";
   }
 
   @Override
@@ -67,8 +68,9 @@ public class TextMsgpClient implements MsgpClient {
             .append(user)
             .append("\n");
       }
+      return out.toString();
     }
-    return out.toString();
+    return "Group " + group + " does not exist.";
   }
 
   @Override
@@ -77,7 +79,7 @@ public class TextMsgpClient implements MsgpClient {
     StringBuilder out = new StringBuilder();
     if (lines != null) {
       for (String line : lines) {
-        if (line.startsWith("to: ") || line.length() == 0) {
+        if (line.startsWith("to: ")) {
           continue;
         }
         if (line.startsWith("from: ")) {
@@ -132,7 +134,6 @@ public class TextMsgpClient implements MsgpClient {
     try {
       return connection.getResponseCode();
     } catch (IOException e) {
-      e.printStackTrace();
       return 0;
     } finally {
       if (connection != null) {
@@ -153,7 +154,6 @@ public class TextMsgpClient implements MsgpClient {
       return response.toString();
 
     } catch (Exception e) {
-      e.printStackTrace();
       return null;
     } finally {
       if (connection != null) {
@@ -168,15 +168,14 @@ public class TextMsgpClient implements MsgpClient {
       List<String> response = new ArrayList<>();
       String line;
       while ((line = rd.readLine()) != null) {
-        if (line.startsWith("msgp")) {
+        if (line.startsWith("msgp") || line.length() == 0) {
           continue;
         }
         response.add(line);
       }
-      return response;
+      return response.isEmpty() ? null : response;
 
     } catch (Exception e) {
-      e.printStackTrace();
       return null;
     } finally {
       if (connection != null) {
