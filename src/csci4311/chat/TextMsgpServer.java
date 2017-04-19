@@ -25,7 +25,6 @@ public class  TextMsgpServer implements MsgpServer {
   @Override
   public void leave(HttpExchange exchange) throws IOException {
     HashMap<String, String> list = getMapFromBody(exchange);
-    server.leave(list.get("user"), list.get("group"));
     handle(exchange, "leave", server.leave(list.get("user"), list.get("group")));
   }
 
@@ -52,8 +51,6 @@ public class  TextMsgpServer implements MsgpServer {
     Headers responseHeaders = exchange.getResponseHeaders();
     responseHeaders.set("Content-Type", "text/plain");
     exchange.sendResponseHeaders(code, 0);
-    PrintStream response = new PrintStream(exchange.getResponseBody());
-    response.close();
   }
 
   private void handle(HttpExchange exchange, String context, ResponseBody body) throws IOException {

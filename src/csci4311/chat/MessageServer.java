@@ -13,14 +13,14 @@ public interface MessageServer {
    * @param user  the name of a user
    * @param group the name of a group
    */
-  ResponseBody join(String user, String group);
+  int join(String user, String group);
 
   /**
    * Handles a user leave request.
    *
    * @param user the name of a user
    */
-  ResponseBody leave(String user, String group);
+  int leave(String user, String group);
 
   /**
    * Handles the sending of a message.

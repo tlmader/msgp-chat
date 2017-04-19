@@ -4,6 +4,8 @@ import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.concurrent.Executors;
 
 /**
@@ -15,20 +17,28 @@ public class ChatServer implements MessageServer {
 
   private static final int PORT = 8080;
 
+  HashMap<String, HashSet<String>> groups = new HashMap<>();
+
   @Override
-  public ResponseBody join(String user, String group) {
-    System.out.println("join()");
-    System.out.println("User: " + user);
-    System.out.println("Group: " + group);
-    return new ResponseBody(200, "User " + user + " added to group " + group);
+  public int join(String user, String group) {
+    if (!groups.containsKey(group)) {
+      groups.put(group, new HashSet<>());
+    }
+    if (groups.get(group).add(user)) {
+      return 200;
+    }
+    return 201;
   }
 
   @Override
-  public ResponseBody leave(String user, String group) {
-    System.out.println("leave()");
-    System.out.println("User: " + user);
-    System.out.println("Group: " + group);
-    return new ResponseBody(200, "User " + user + " removed from group " + group);
+  public int leave(String user, String group) {
+    if (!groups.containsKey(group)) {
+      return 400;
+    }
+    if (groups.get(group).remove(user)) {
+      return 200;
+    }
+    return 201;
   }
 
   @Override

@@ -16,7 +16,9 @@ public class CLIUserAgent implements UserAgent {
 
   public static void main(String[] args) {
     TextMsgpClient client = new TextMsgpClient();
+    out.println(client.leave("Ted", "CSCI4311"));
     out.println(client.join("Ted", "CSCI4311"));
+    out.println(client.leave("Ted", "CSCI4311"));
     out.println(client.leave("Ted", "CSCI4311"));
   }
 }
