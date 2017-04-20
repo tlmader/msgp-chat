@@ -21,15 +21,15 @@ public class MsgpMessage implements Serializable {
     this.message = message;
   }
 
-  public String getFrom() {
+  String getFrom() {
     return from;
   }
 
-  public List<String> getTo() {
+  List<String> getTo() {
     return to;
   }
 
-  public String getMessage() {
+  String getMessage() {
     return message;
   }
 }

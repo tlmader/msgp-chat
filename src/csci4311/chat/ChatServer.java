@@ -82,6 +82,7 @@ public class ChatServer implements MessageServer {
     InetSocketAddress addr = new InetSocketAddress(PORT);
     HttpServer server = HttpServer.create(addr, 0);
     MsgpServer msgp = new TextMsgpServer();
+    server.createContext("/", msgp::connect);
     server.createContext("/join", msgp::join);
     server.createContext("/leave", msgp::leave);
     server.createContext("/send", msgp::send);

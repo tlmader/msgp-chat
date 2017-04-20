@@ -14,11 +14,9 @@ import java.util.List;
  */
 public class TextMsgpClient implements MsgpClient {
 
-  private final String BASE_URL = "http://localhost:" + ChatServer.PORT + "/";
-  public HttpURLConnection userConnection;
-
-  public void connect(String user) {
-    userConnection = createConnection("", user);
+  @Override
+  public HttpURLConnection connect(String user) {
+    return createConnection("", user);
   }
 
   @Override
@@ -113,6 +111,7 @@ public class TextMsgpClient implements MsgpClient {
     URL url;
     HttpURLConnection connection = null;
     try {
+      String BASE_URL = "http://localhost:" + ChatServer.PORT + "/";
       url = new URL(BASE_URL + route);
       connection = (HttpURLConnection) url.openConnection();
       connection.setRequestMethod("GET");

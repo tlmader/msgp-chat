@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.util.Scanner;
 
 import static java.lang.System.out;
@@ -15,37 +16,36 @@ import static java.lang.System.out;
  */
 public class CLIUserAgent implements UserAgent {
 
-  private static TextMsgpClient client;
-
   @Override
   public void deliver(String message) {
     out.println(message);
   }
 
   private void start() {
-    client = new TextMsgpClient();
+    MsgpClient client = new TextMsgpClient();
     String user = "tlmader";
-    client.connect(user);
+    HttpURLConnection connection = client.connect(user);
+    DeliveryWorker worker = new DeliveryWorker(connection);
+    worker.start();
     Scanner sc = new Scanner(System.in);
-    DeliveryWorker worker = new DeliveryWorker();
-    while (client.userConnection != null) {
+    while (connection != null) {
       out.print("@" + user + " >> ");
       String[] input = sc.nextLine().split(" ");
       switch (input[0]) {
         case "join":
-          out.println(input.length == 2 ? client.join(user, input[1]) : getUsage(input[0]));
+          deliver(input.length == 2 ? client.join(user, input[1]) : getUsage(input[0]));
           break;
         case "leave":
-          out.println(input.length == 2 ? client.leave(user, input[1]) : getUsage(input[0]));
+          deliver(input.length == 2 ? client.leave(user, input[1]) : getUsage(input[0]));
           break;
         case "groups":
-          out.println(client.groups());
+          deliver(client.groups());
           break;
         case "users":
-          out.println(input.length == 2 ? client.users(input[1]) : getUsage(input[0]));
+          deliver(input.length == 2 ? client.users(input[1]) : getUsage(input[0]));
           break;
         case "history":
-          out.println(input.length == 2 ? client.history(input[1]) : getUsage(input[0]));
+          deliver(input.length == 2 ? client.history(input[1]) : getUsage(input[0]));
           break;
       }
     }
@@ -57,10 +57,16 @@ public class CLIUserAgent implements UserAgent {
 
   private class DeliveryWorker extends Thread {
 
+    private HttpURLConnection connection;
+
+    DeliveryWorker(HttpURLConnection connection) {
+      this.connection = connection;
+    }
+
     public void run() {
       try {
-        BufferedReader rd = new BufferedReader(new InputStreamReader(client.userConnection.getInputStream()));
-        while (client.userConnection != null) {
+        BufferedReader rd = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        while (connection != null) {
           String line;
           if ((line = rd.readLine()) != null) {
             deliver(line);

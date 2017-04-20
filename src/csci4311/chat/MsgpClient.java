@@ -1,5 +1,6 @@
 package csci4311.chat;
 
+import java.net.HttpURLConnection;
 import java.util.List;
 import java.util.Set;
 
@@ -7,6 +8,8 @@ import java.util.Set;
  * Communication interface to be used by user agents to send messages and requests.
  */
 public interface MsgpClient {
+
+  HttpURLConnection connect(String user);
 
   /**
    * Encodes a user join request.

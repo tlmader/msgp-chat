@@ -11,6 +11,8 @@ import java.io.IOException;
  */
 public interface MsgpServer {
 
+  void connect(HttpExchange exchange) throws IOException;
+
   /**
    * Encodes a user join request.
    *
