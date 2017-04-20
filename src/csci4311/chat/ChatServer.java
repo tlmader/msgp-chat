@@ -16,14 +16,15 @@ import java.util.concurrent.Executors;
  */
 public class ChatServer implements MessageServer {
 
-  public static final int PORT = 1337;
+  static final int PORT = 1337;
 
   private Map<String, HashSet<String>> groupUsers = new HashMap<>();
   private Map<String, List<MsgpMessage>> groupHistory = new HashMap<>();
-  private Map<String, HttpExchange> userStreams = new HashMap<>();
+  private Map<String, PrintStream> userStreams = new HashMap<>();
 
-  public void connect(String user, HttpExchange exchange) {
-    userStreams.put(user, exchange);
+  int connect(String user, PrintStream ps) {
+    userStreams.put(user, ps);
+    return 200;
   }
 
   @Override
@@ -65,7 +66,7 @@ public class ChatServer implements MessageServer {
     }
     for (String to : message.getTo()) {
       if (to.startsWith("@")) {
-        PrintStream ps = new PrintStream(userStreams.get(to.substring(1)).getResponseBody());
+        PrintStream ps = userStreams.get(to.substring(1));
         ps.println(message.getMessage());
         ps.close();
       } else if (to.startsWith("#")) {

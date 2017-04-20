@@ -16,14 +16,17 @@ import static java.lang.System.out;
  */
 public class CLIUserAgent implements UserAgent {
 
+  private String user = "tlmader";
+  private MsgpClient client = new TextMsgpClient();
+
   @Override
   public void deliver(String message) {
     out.println(message);
+    HttpURLConnection connection = client.connect(user);
+    new DeliveryWorker(connection).start();
   }
 
   private void start() {
-    MsgpClient client = new TextMsgpClient();
-    String user = "tlmader";
     HttpURLConnection connection = client.connect(user);
     new DeliveryWorker(connection).start();
     Scanner sc = new Scanner(System.in);
@@ -71,8 +74,8 @@ public class CLIUserAgent implements UserAgent {
     public void run() {
       try {
         BufferedReader rd = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        while (true) {
-          String line;
+        String line = null;
+        while (line == null) {
           if ((line = rd.readLine()) != null) {
             deliver(line);
           }

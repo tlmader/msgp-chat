@@ -19,8 +19,7 @@ public class  TextMsgpServer implements MsgpServer {
   private ChatServer server = new ChatServer();
 
   public void connect(HttpExchange exchange) throws IOException {
-    handle(exchange, 200);
-    server.connect(getStringFromBody(exchange), exchange);
+    handle(exchange, server.connect(getStringFromBody(exchange), new PrintStream(exchange.getResponseBody())));
   }
 
   @Override
