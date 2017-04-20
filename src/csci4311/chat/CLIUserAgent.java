@@ -2,12 +2,8 @@ package csci4311.chat;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.io.PrintStream;
 import java.net.HttpURLConnection;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 import static java.lang.System.out;
 
@@ -51,13 +47,14 @@ public class CLIUserAgent implements UserAgent {
           out.println(inputArr.length == 2 ? client.users(inputArr[1]) : getUsage(inputArr[0]));
           break;
         case "send":
-          List<String> to = new ArrayList<>();
+          Set<String> to = new HashSet<>();
           String message = null;
           for (int i = 1; i < inputArr.length; i++) {
             if (inputArr[i].startsWith("@") || inputArr[i].startsWith("#") && !inputArr[i].substring(1).equals(user)) {
               to.add(inputArr[i]);
             } else {
               message = String.join(" ", Arrays.copyOfRange(inputArr, i, inputArr.length));
+              break;
             }
           }
           client.send(new MsgpMessage(user, to, message));
@@ -84,12 +81,18 @@ public class CLIUserAgent implements UserAgent {
     public void run() {
       try {
         BufferedReader rd = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        String line = null;
-        while (line == null) {
-          if ((line = rd.readLine()) != null) {
-            deliver(line);
-          }
+        //noinspection StatementWithEmptyBody
+        while (rd.readLine() == null) {
+          // Wait for message
         }
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        sb.append(rd.readLine().substring(6));
+        sb.append("] ");
+        rd.readLine();
+        rd.readLine();
+        sb.append(rd.readLine());
+        deliver(sb.toString());
       } catch (Exception e) {
         e.printStackTrace();
       }
@@ -98,7 +101,9 @@ public class CLIUserAgent implements UserAgent {
 
   public static void main(String[] args) {
     CLIUserAgent agent = new CLIUserAgent();
-    agent.user = args.length == 1 ? args[0] : "tlmader";
+    agent.user = args.length > 0 ? args[0] : "tlmader";
+    TextMsgpClient.server = args.length > 1 ? args[1] : "http://localhost";
+    TextMsgpClient.port = args.length > 2 ? args[2] : "1337";
     agent.start();
   }
 }

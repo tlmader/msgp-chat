@@ -1,21 +1,21 @@
 package csci4311.chat;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.Set;
 
 /**
  * Encodes a text message.
  */
 public class MsgpMessage implements Serializable {
   private String from, message;
-  private List<String> to;
+  private Set<String> to;
 
   /**
    * @param from    sender
    * @param to      list of recipients
    * @param message message content
    */
-  public MsgpMessage(String from, List<String> to, String message) {
+  public MsgpMessage(String from, Set<String> to, String message) {
     this.from = from;
     this.to = to;
     this.message = message;
@@ -25,7 +25,7 @@ public class MsgpMessage implements Serializable {
     return from;
   }
 
-  List<String> getTo() {
+  Set<String> getTo() {
     return to;
   }
 

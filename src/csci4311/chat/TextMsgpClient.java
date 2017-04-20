@@ -14,6 +14,9 @@ import java.util.List;
  */
 public class TextMsgpClient implements MsgpClient {
 
+  static String server = "http://localhost";
+  static String port = "1337";
+
   @Override
   public HttpURLConnection connect(String user) {
     return createConnection("", user);
@@ -41,7 +44,7 @@ public class TextMsgpClient implements MsgpClient {
     body.put("user", user);
     body.put("group", group);
     int code = getResponseCode(createConnection("leave", body));
-    return code == 400 ? "Not a member of #" + group + "." : "";
+    return code == 400 ? "Not a member of #" + group + "." : "Left group #" + group + ".";
   }
 
   @Override
@@ -53,17 +56,14 @@ public class TextMsgpClient implements MsgpClient {
   public String groups() {
     List<String> groups = getResponseAsStrings(createConnection("groups"));
     StringBuilder out = new StringBuilder();
-    if (groups != null) {
+    if (groups != null && !groups.isEmpty()) {
       for (String group : groups) {
         List<String> users = getResponseAsStrings(createConnection("users", group));
-        if (users == null) {
-          continue;
-        }
         out.append("#")
             .append(group)
             .append(" has ")
-            .append(users.size())
-            .append(" members\n");
+            .append(users != null ? users.size() : "0")
+            .append(" members");
       }
       return out.toString();
     }
@@ -74,7 +74,7 @@ public class TextMsgpClient implements MsgpClient {
   public String users(String group) {
     List<String> users = getResponseAsStrings(createConnection("users", group));
     StringBuilder out = new StringBuilder();
-    if (users != null) {
+    if (users != null && !users.isEmpty()) {
       for (String user : users) {
         out.append("@")
             .append(user)
@@ -89,7 +89,7 @@ public class TextMsgpClient implements MsgpClient {
   public String history(String group) {
     List<String> lines = getResponseAsStrings(createConnection("history", group));
     StringBuilder out = new StringBuilder();
-    if (lines != null) {
+    if (lines != null && !lines.isEmpty()) {
       for (String line : lines) {
         if (line.startsWith("to: ")) {
           continue;
@@ -108,11 +108,9 @@ public class TextMsgpClient implements MsgpClient {
   }
 
   private HttpURLConnection createConnection(String route) {
-    URL url;
     HttpURLConnection connection = null;
     try {
-      String BASE_URL = "http://localhost:" + ChatServer.PORT + "/";
-      url = new URL(BASE_URL + route);
+      URL url = new URL(server + ":" + port + "/" + route);
       connection = (HttpURLConnection) url.openConnection();
       connection.setRequestMethod("GET");
       connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
@@ -148,26 +146,6 @@ public class TextMsgpClient implements MsgpClient {
       return connection.getResponseCode();
     } catch (IOException e) {
       return 0;
-    } finally {
-      if (connection != null) {
-        connection.disconnect();
-      }
-    }
-  }
-
-  private String getResponseBody(HttpURLConnection connection) {
-    try {
-      BufferedReader rd = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-      String line;
-      StringBuilder response = new StringBuilder();
-      while ((line = rd.readLine()) != null) {
-        response.append(line).append('\n');
-      }
-      rd.close();
-      return response.toString();
-
-    } catch (Exception e) {
-      return null;
     } finally {
       if (connection != null) {
         connection.disconnect();

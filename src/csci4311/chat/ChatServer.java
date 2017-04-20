@@ -16,8 +16,6 @@ import java.util.concurrent.Executors;
  */
 public class ChatServer implements MessageServer {
 
-  static final int PORT = 1337;
-
   private Map<String, HashSet<String>> groupUsers = new HashMap<>();
   private Map<String, List<MsgpMessage>> groupHistory = new HashMap<>();
   private Map<String, PrintStream> userStreams = new HashMap<>();
@@ -92,8 +90,21 @@ public class ChatServer implements MessageServer {
     return groupHistory.get(group);
   }
 
+  private void deliver(String to, MsgpMessage message) {
+    if (to.equals(message.getFrom())) {
+      return;
+    }
+    PrintStream ps = userStreams.get(to);
+    ps.println("msgp send");
+    ps.println("from: " + message.getFrom());
+    ps.println("to: " + to);
+    ps.println("\n" + message.getMessage() + "\n");
+    ps.close();
+  }
+
   public static void main(String[] args) throws IOException {
-    InetSocketAddress addr = new InetSocketAddress(PORT);
+    int port = args.length > 0 ? Integer.parseInt(args[0]) : 1337;
+    InetSocketAddress addr = new InetSocketAddress(port);
     HttpServer server = HttpServer.create(addr, 0);
     MsgpServer msgp = new TextMsgpServer();
     server.createContext("/", msgp::connect);
@@ -105,15 +116,6 @@ public class ChatServer implements MessageServer {
     server.createContext("/history", msgp::history);
     server.setExecutor(Executors.newCachedThreadPool());
     server.start();
-    System.out.println("Server is listening on port " + PORT + "...");
-  }
-
-  private void deliver(String to, MsgpMessage message) {
-    if (to.equals(message.getFrom())) {
-      return;
-    }
-    PrintStream ps = userStreams.get(to);
-    ps.println(message.getMessage());
-    ps.close();
+    System.out.println("Server is listening on port " + port + "...");
   }
 }
