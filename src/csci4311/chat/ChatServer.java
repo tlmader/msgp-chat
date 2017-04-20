@@ -14,7 +14,7 @@ import java.util.concurrent.Executors;
  */
 public class ChatServer implements MessageServer {
 
-  private static final int PORT = 8080;
+  public static final int PORT = 1337;
 
   private Map<String, HashSet<String>> groupUsers = new HashMap<>();
   private Map<String, List<MsgpMessage>> groupHistory = new HashMap<>();

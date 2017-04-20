@@ -14,7 +14,12 @@ import java.util.List;
  */
 public class TextMsgpClient implements MsgpClient {
 
-  private final String BASE_URL = "http://localhost:8080/";
+  private final String BASE_URL = "http://localhost:" + ChatServer.PORT + "/";
+  public HttpURLConnection userConnection;
+
+  public void connect(String user) {
+    userConnection = createConnection("", user);
+  }
 
   @Override
   public String join(String user, String group) {

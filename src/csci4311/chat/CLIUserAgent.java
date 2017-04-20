@@ -1,5 +1,9 @@
 package csci4311.chat;
 
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Scanner;
 
 import static java.lang.System.out;
@@ -11,16 +15,20 @@ import static java.lang.System.out;
  */
 public class CLIUserAgent implements UserAgent {
 
-  @Override
-  public void deliver(MsgpMessage message) {
+  private static TextMsgpClient client;
 
+  @Override
+  public void deliver(String message) {
+    out.println(message);
   }
 
-  public static void main(String[] args) {
-    TextMsgpClient client = new TextMsgpClient();
-    Scanner sc = new Scanner(System.in);
+  private void start() {
+    client = new TextMsgpClient();
     String user = "tlmader";
-    while (true) {
+    client.connect(user);
+    Scanner sc = new Scanner(System.in);
+    DeliveryWorker worker = new DeliveryWorker();
+    while (client.userConnection != null) {
       out.print("@" + user + " >> ");
       String[] input = sc.nextLine().split(" ");
       switch (input[0]) {
@@ -43,21 +51,29 @@ public class CLIUserAgent implements UserAgent {
     }
   }
 
-  private static String getUsage(String command) {
+  private String getUsage(String command) {
     return "usage: " + command + " <group>";
   }
+
+  private class DeliveryWorker extends Thread {
+
+    public void run() {
+      try {
+        BufferedReader rd = new BufferedReader(new InputStreamReader(client.userConnection.getInputStream()));
+        while (client.userConnection != null) {
+          String line;
+          if ((line = rd.readLine()) != null) {
+            deliver(line);
+          }
+        }
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+  }
+
+  public static void main(String[] args) {
+    CLIUserAgent agent = new CLIUserAgent();
+    agent.start();
+  }
 }
-//    out.println(client.join("tlmader", "general"));
-//    out.println(client.join("astrika", "general"));
-//    out.println(client.join("hill", "programming"));
-//    out.println(client.join("tlmader", "programming"));
-//    out.println(client.groups());
-//    out.println(client.users("general"));
-//    out.println(client.users("programming"));
-//    List<String> to = new ArrayList<>();
-//    to.add("#general");
-//    to.add("#programming");
-//    out.println(client.send(new MsgpMessage("ted", to, "I'm pooping.")));
-//    out.println(client.send(new MsgpMessage("astrika", to, "You're a poopster!")));
-//    out.println(client.history("general"));
-//    out.println(client.history("programming"));
