@@ -65,7 +65,7 @@ public class ChatServer implements MessageServer {
       }
     }
     for (String to : message.getTo()) {
-      if (to.startsWith("@")) {
+      if (to.startsWith("@") && !to.substring(1).equals(message.getFrom())) {
         PrintStream ps = userStreams.get(to.substring(1));
         ps.println(message.getMessage());
         ps.close();

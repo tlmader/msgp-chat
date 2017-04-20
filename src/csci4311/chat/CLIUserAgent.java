@@ -16,12 +16,13 @@ import static java.lang.System.out;
  */
 public class CLIUserAgent implements UserAgent {
 
-  private String user = "tlmader";
   private MsgpClient client = new TextMsgpClient();
+  private String user;
 
   @Override
   public void deliver(String message) {
-    out.println(message);
+    out.println("\n" + message);
+    out.print("@" + user + " >> ");
     HttpURLConnection connection = client.connect(user);
     new DeliveryWorker(connection).start();
   }
@@ -49,8 +50,8 @@ public class CLIUserAgent implements UserAgent {
           break;
         case "send":
           List<String> to = new ArrayList<>();
-          to.add("@tlmader");
-          client.send(new MsgpMessage("tlmader", to, "Success!"));
+          to.add("@astrika");
+          client.send(new MsgpMessage(user, to, "poopster!"));
           break;
         case "history":
           deliver(inputArr.length == 2 ? client.history(inputArr[1]) : getUsage(inputArr[0]));
@@ -88,6 +89,7 @@ public class CLIUserAgent implements UserAgent {
 
   public static void main(String[] args) {
     CLIUserAgent agent = new CLIUserAgent();
+    agent.user = args.length == 1 ? args[0] : "tlmader";
     agent.start();
   }
 }
