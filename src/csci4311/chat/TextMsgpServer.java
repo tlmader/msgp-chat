@@ -76,7 +76,6 @@ public class  TextMsgpServer implements MsgpServer {
     exchange.sendResponseHeaders(code, 0);
 
     PrintStream response = new PrintStream(exchange.getResponseBody());
-    response.print("msgp ");
     printReplyCode(response, code);
     for (String s : set) {
       response.println(s);
