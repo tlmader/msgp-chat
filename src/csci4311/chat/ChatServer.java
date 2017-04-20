@@ -66,10 +66,11 @@ public class ChatServer implements MessageServer {
     }
     for (String to : message.getTo()) {
       if (to.startsWith("@") && !to.substring(1).equals(message.getFrom())) {
-        PrintStream ps = userStreams.get(to.substring(1));
-        ps.println(message.getMessage());
-        ps.close();
+        deliver(to.substring(1), message);
       } else if (to.startsWith("#")) {
+        for (String user : groupUsers.get(to.substring(1))) {
+          deliver(user, message);
+        }
         groupHistory.get(to.substring(1)).add(message);
       }
     }
@@ -105,5 +106,14 @@ public class ChatServer implements MessageServer {
     server.setExecutor(Executors.newCachedThreadPool());
     server.start();
     System.out.println("Server is listening on port " + PORT + "...");
+  }
+
+  private void deliver(String to, MsgpMessage message) {
+    if (to.equals(message.getFrom())) {
+      return;
+    }
+    PrintStream ps = userStreams.get(to);
+    ps.println(message.getMessage());
+    ps.close();
   }
 }
