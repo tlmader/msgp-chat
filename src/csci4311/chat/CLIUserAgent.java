@@ -2,8 +2,10 @@ package csci4311.chat;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -37,24 +39,31 @@ public class CLIUserAgent implements UserAgent {
       String[] inputArr = input.split(" ");
       switch (inputArr[0]) {
         case "join":
-          deliver(inputArr.length == 2 ? client.join(user, inputArr[1]) : getUsage(inputArr[0]));
+          out.println(inputArr.length == 2 ? client.join(user, inputArr[1]) : getUsage(inputArr[0]));
           break;
         case "leave":
-          deliver(inputArr.length == 2 ? client.leave(user, inputArr[1]) : getUsage(inputArr[0]));
+          out.println(inputArr.length == 2 ? client.leave(user, inputArr[1]) : getUsage(inputArr[0]));
           break;
         case "groups":
-          deliver(client.groups());
+          out.println(client.groups());
           break;
         case "users":
-          deliver(inputArr.length == 2 ? client.users(inputArr[1]) : getUsage(inputArr[0]));
+          out.println(inputArr.length == 2 ? client.users(inputArr[1]) : getUsage(inputArr[0]));
           break;
         case "send":
           List<String> to = new ArrayList<>();
-          to.add("@astrika");
-          client.send(new MsgpMessage(user, to, "poopster!"));
+          String message = null;
+          for (int i = 1; i < inputArr.length; i++) {
+            if (inputArr[i].startsWith("@") || inputArr[i].startsWith("#") && !inputArr[i].substring(1).equals(user)) {
+              to.add(inputArr[i]);
+            } else {
+              message = String.join(" ", Arrays.copyOfRange(inputArr, i, inputArr.length));
+            }
+          }
+          client.send(new MsgpMessage(user, to, message));
           break;
         case "history":
-          deliver(inputArr.length == 2 ? client.history(inputArr[1]) : getUsage(inputArr[0]));
+          out.println(inputArr.length == 2 ? client.history(inputArr[1]) : getUsage(inputArr[0]));
           break;
       }
     }
