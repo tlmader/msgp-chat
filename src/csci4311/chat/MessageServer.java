@@ -1,5 +1,6 @@
 package csci4311.chat;
 
+import java.io.PrintStream;
 import java.util.List;
 import java.util.Set;
 
@@ -9,6 +10,14 @@ import java.util.Set;
  * @author Ted Mader
  */
 public interface MessageServer {
+
+  /**
+   * Handles a user join request.
+   *
+   * @param user the name of a user
+   * @param ps   the PrintStream for a user
+   */
+  int connect(String user, PrintStream ps);
 
   /**
    * Handles a user join request.

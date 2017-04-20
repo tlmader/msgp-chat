@@ -1,6 +1,5 @@
 package csci4311.chat;
 
-import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;
@@ -20,7 +19,8 @@ public class ChatServer implements MessageServer {
   private Map<String, List<MsgpMessage>> groupHistory = new HashMap<>();
   private Map<String, PrintStream> userStreams = new HashMap<>();
 
-  int connect(String user, PrintStream ps) {
+  @Override
+  public int connect(String user, PrintStream ps) {
     userStreams.put(user, ps);
     return 200;
   }
