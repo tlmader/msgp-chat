@@ -1,10 +1,10 @@
 package csci4311.chat;
 
 import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 import static java.lang.System.out;
@@ -25,27 +25,32 @@ public class CLIUserAgent implements UserAgent {
     MsgpClient client = new TextMsgpClient();
     String user = "tlmader";
     HttpURLConnection connection = client.connect(user);
-    DeliveryWorker worker = new DeliveryWorker(connection);
-    worker.start();
+    new DeliveryWorker(connection).start();
     Scanner sc = new Scanner(System.in);
     while (connection != null) {
       out.print("@" + user + " >> ");
-      String[] input = sc.nextLine().split(" ");
-      switch (input[0]) {
+      String input = sc.nextLine();
+      String[] inputArr = input.split(" ");
+      switch (inputArr[0]) {
         case "join":
-          deliver(input.length == 2 ? client.join(user, input[1]) : getUsage(input[0]));
+          deliver(inputArr.length == 2 ? client.join(user, inputArr[1]) : getUsage(inputArr[0]));
           break;
         case "leave":
-          deliver(input.length == 2 ? client.leave(user, input[1]) : getUsage(input[0]));
+          deliver(inputArr.length == 2 ? client.leave(user, inputArr[1]) : getUsage(inputArr[0]));
           break;
         case "groups":
           deliver(client.groups());
           break;
         case "users":
-          deliver(input.length == 2 ? client.users(input[1]) : getUsage(input[0]));
+          deliver(inputArr.length == 2 ? client.users(inputArr[1]) : getUsage(inputArr[0]));
+          break;
+        case "send":
+          List<String> to = new ArrayList<>();
+          to.add("@tlmader");
+          client.send(new MsgpMessage("tlmader", to, "Success!"));
           break;
         case "history":
-          deliver(input.length == 2 ? client.history(input[1]) : getUsage(input[0]));
+          deliver(inputArr.length == 2 ? client.history(inputArr[1]) : getUsage(inputArr[0]));
           break;
       }
     }
@@ -66,13 +71,13 @@ public class CLIUserAgent implements UserAgent {
     public void run() {
       try {
         BufferedReader rd = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        while (connection != null) {
+        while (true) {
           String line;
           if ((line = rd.readLine()) != null) {
             deliver(line);
           }
         }
-      } catch (IOException e) {
+      } catch (Exception e) {
         e.printStackTrace();
       }
     }
