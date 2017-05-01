@@ -32,7 +32,7 @@ public class CLIUserAgent implements UserAgent {
     while (connection != null) {
       out.print("@" + user + " >> ");
       String input = sc.nextLine();
-      String[] inputArr = input.split(" ");
+      String[] inputArr = input.split("\\s+");
       switch (inputArr[0]) {
         case "join":
           out.println(inputArr.length == 2 ? client.join(user, inputArr[1]) : getUsage(inputArr[0]));

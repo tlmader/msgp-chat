@@ -4,9 +4,7 @@ import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 
 import java.io.*;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Implements methods for sending and receiving of encoded messages.
@@ -24,19 +22,40 @@ public class  TextMsgpServer implements MsgpServer {
 
   @Override
   public void join(HttpExchange exchange) throws IOException {
-    HashMap<String, String> list = getMapFromBody(exchange);
-    handle(exchange, list != null ? server.join(list.get("user"), list.get("group")) : 400);
+    String str;
+    if ((str = getStringFromBody(exchange)) != null) {
+      String[] strs = str.split("\\s+");
+      handle(exchange, strs.length > 3 ? server.join(strs[2], strs[3]) : 400);
+    }
   }
 
   @Override
   public void leave(HttpExchange exchange) throws IOException {
-    HashMap<String, String> list = getMapFromBody(exchange);
-    handle(exchange, list != null ? server.leave(list.get("user"), list.get("group")) : 400);
+    String str;
+    if ((str = getStringFromBody(exchange)) != null) {
+      String[] strs = str.split("\\s+");
+      handle(exchange, strs.length > 3 ? server.leave(strs[2], strs[3]) : 400);
+    }
   }
 
   @Override
   public void send(HttpExchange exchange) throws IOException {
-    handle(exchange, server.send(getMessageFromBody(exchange)));
+    String str;
+    if ((str = getStringFromBody(exchange)) != null) {
+      String[] lines = str.split("[\\r\\n]+");
+      Set<String> to = new HashSet<>();
+      String from = "", message = "";
+      for (String line : lines) {
+        if (line.startsWith("to: ")) {
+          to.add(line.substring(4));
+        } else if (line.startsWith("from: ")) {
+          from = line.substring(6);
+        } else {
+          message = line;
+        }
+      }
+      handle(exchange, server.send(new MsgpMessage(from, to, message)));
+    }
   }
 
   @Override
@@ -46,22 +65,27 @@ public class  TextMsgpServer implements MsgpServer {
 
   @Override
   public void users(HttpExchange exchange) throws IOException {
-    Set<String> users = server.users(getStringFromBody(exchange));
-    if (users == null) {
-      handle(exchange, 400);
-    } else {
-      handle(exchange, users);
+    String str;
+    if ((str = getStringFromBody(exchange)) != null) {
+      String[] strs = str.split("\\s+");
+      if (strs.length > 2) {
+        handle(exchange, server.users(strs[2]));
+      } else {
+        handle(exchange, 400);
+      }
     }
   }
 
   @Override
   public void history(HttpExchange exchange) throws IOException {
-    String group = getStringFromBody(exchange);
-    List<MsgpMessage> messages = server.history(group);
-    if (messages == null) {
-      handle(exchange, 400);
-    } else {
-      handle(exchange, messages, group);
+    String str;
+    if ((str = getStringFromBody(exchange)) != null) {
+      String[] strs = str.split("\\s+");
+      if (strs.length > 2) {
+        handle(exchange, server.history(strs[2]), strs[2]);
+      } else {
+        handle(exchange, 400);
+      }
     }
   }
 
@@ -122,16 +146,7 @@ public class  TextMsgpServer implements MsgpServer {
     } catch (ClassNotFoundException e) {
       e.printStackTrace();
     }
-    return null;
-  }
-
-  private HashMap<String, String> getMapFromBody(HttpExchange exchange) throws IOException {
-    ObjectInputStream in = new ObjectInputStream(exchange.getRequestBody());
-    try {
-      return (HashMap<String, String>) in.readObject();
-    } catch (ClassNotFoundException e) {
-      e.printStackTrace();
-    }
+    handle(exchange, 400);
     return null;
   }
 

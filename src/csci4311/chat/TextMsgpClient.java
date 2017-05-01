@@ -4,7 +4,6 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -24,12 +23,9 @@ public class TextMsgpClient implements MsgpClient {
 
   @Override
   public String join(String user, String group) {
-    HashMap<String, String> body = new HashMap<>();
-    body.put("user", user);
-    body.put("group", group);
-    int code = getResponseCode(createConnection("join", body));
+    int code = getResponseCode(createConnection("join", "msgp join " + user + " " + group));
     if (code == 200) {
-      List<String> users = getResponseAsStrings(createConnection("users", group));
+      List<String> users = getResponseAsStrings(createConnection("users", "msgp users " + group));
       if (users == null) {
         return "Error";
       }
@@ -40,25 +36,32 @@ public class TextMsgpClient implements MsgpClient {
 
   @Override
   public String leave(String user, String group) {
-    HashMap<String, String> body = new HashMap<>();
-    body.put("user", user);
-    body.put("group", group);
-    int code = getResponseCode(createConnection("leave", body));
+    int code = getResponseCode(createConnection("leave", "msgp leave " + user + " " + group));
     return code == 400 ? "Not a member of #" + group + "." : "Left group #" + group + ".";
   }
 
   @Override
   public int send(MsgpMessage message) {
-    return getResponseCode(createConnection("send", message));
+    StringBuilder out = new StringBuilder();
+    out.append("msgp send\nfrom: ")
+        .append(message.getFrom());
+    for (String to : message.getTo()) {
+      out.append("\nto: ")
+          .append(to);
+    }
+    out.append("\n\n")
+        .append(message.getMessage())
+        .append("\n\n");
+    return getResponseCode(createConnection("send", out.toString()));
   }
 
   @Override
   public String groups() {
-    List<String> groups = getResponseAsStrings(createConnection("groups"));
+    List<String> groups = getResponseAsStrings(createConnection("groups", "msgp groups"));
     StringBuilder out = new StringBuilder();
     if (groups != null && !groups.isEmpty()) {
       for (String group : groups) {
-        List<String> users = getResponseAsStrings(createConnection("users", group));
+        List<String> users = getResponseAsStrings(createConnection("users", "msgp users " + group));
         out.append("#")
             .append(group)
             .append(" has ")
@@ -72,13 +75,15 @@ public class TextMsgpClient implements MsgpClient {
 
   @Override
   public String users(String group) {
-    List<String> users = getResponseAsStrings(createConnection("users", group));
+    List<String> users = getResponseAsStrings(createConnection("users", "msgp users " + group));
     StringBuilder out = new StringBuilder();
     if (users != null && !users.isEmpty()) {
+      String prefix = "";
       for (String user : users) {
-        out.append("@")
-            .append(user)
-            .append("\n");
+        out.append(prefix)
+            .append("@")
+            .append(user);
+        prefix = "\n";
       }
       return out.toString();
     }
@@ -87,21 +92,23 @@ public class TextMsgpClient implements MsgpClient {
 
   @Override
   public String history(String group) {
-    List<String> lines = getResponseAsStrings(createConnection("history", group));
+    List<String> lines = getResponseAsStrings(createConnection("history", "msgp history " + group));
     StringBuilder out = new StringBuilder();
     if (lines != null && !lines.isEmpty()) {
+      String prefix = "";
       for (String line : lines) {
         if (line.startsWith("to: ")) {
           continue;
         }
         if (line.startsWith("from: ")) {
+          out.append(prefix);
           out.append("[")
               .append(line.substring(6))
               .append("] ");
         } else {
-          out.append(line)
-              .append("\n");
+          out.append(line);
         }
+        prefix = "\n";
       }
     }
     return out.toString();
