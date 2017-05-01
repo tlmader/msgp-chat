@@ -86,9 +86,7 @@ public class ChatServer implements MessageServer {
   }
 
   public Set<String> users() {
-    Set<String> allUsers = new HashSet<>();
-    groupUsers.values().forEach(allUsers::addAll);
-    return allUsers;
+    return userStreams.keySet();
   }
 
   @Override
@@ -111,8 +109,9 @@ public class ChatServer implements MessageServer {
   public static void main(String[] args) throws IOException {
     int port = args.length > 0 ? Integer.parseInt(args[0]) : 4311;
     int restPort = args.length > 1 ? Integer.parseInt(args[1]) : 8311;
+    ChatServer chatServer = new ChatServer();
     HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
-    MsgpServer msgp = new TextMsgpServer();
+    MsgpServer msgp = new TextMsgpServer(chatServer);
     server.createContext("/", msgp::connect);
     server.createContext("/join", msgp::join);
     server.createContext("/leave", msgp::leave);
@@ -123,7 +122,7 @@ public class ChatServer implements MessageServer {
     server.setExecutor(Executors.newCachedThreadPool());
     server.start();
     HttpServer restServer = HttpServer.create(new InetSocketAddress(restPort), 0);
-    MsgpServer restMsgp = new RestMsgpServer();
+    MsgpServer restMsgp = new RestMsgpServer(chatServer);
     restServer.createContext("/", restMsgp::connect);
     restServer.createContext("/join", restMsgp::join);
     restServer.createContext("/leave", restMsgp::leave);

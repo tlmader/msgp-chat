@@ -14,7 +14,11 @@ import java.util.*;
 @SuppressWarnings("unchecked")
 public class  TextMsgpServer implements MsgpServer {
 
-  private ChatServer server = new ChatServer();
+  private final MessageServer server;
+
+  TextMsgpServer(MessageServer server) {
+    this.server = server;
+  }
 
   public void connect(HttpExchange exchange) throws IOException {
     handle(exchange, server.connect(getBody(exchange), new PrintStream(exchange.getResponseBody())));

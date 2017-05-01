@@ -8,14 +8,18 @@ import java.io.PrintStream;
 import java.util.Set;
 
 /**
- * Description.
+ * Implements RESTful methods for sending and receiving of encoded messages.
  *
  * @author Ted Mader
  * @since 2017-04-30
  */
 public class RestMsgpServer implements MsgpServer {
 
-  private final ChatServer server = new ChatServer();
+  private final ChatServer server;
+
+  RestMsgpServer(ChatServer server) {
+    this.server = server;
+  }
 
   @Override
   public void connect(HttpExchange exchange) throws IOException {
@@ -39,12 +43,12 @@ public class RestMsgpServer implements MsgpServer {
 
   @Override
   public void groups(HttpExchange exchange) throws IOException {
-
+    handle(exchange, setToJSON(server.groups(), "groups"));
   }
 
   @Override
   public void users(HttpExchange exchange) throws IOException {
-    handle(exchange, "[{\"users\":" + server.users().toString() + "}]" );
+    handle(exchange, setToJSON(server.users(), "users"));
   }
 
   @Override
@@ -59,5 +63,22 @@ public class RestMsgpServer implements MsgpServer {
     PrintStream response = new PrintStream(exchange.getResponseBody());
     response.println(json);
     response.close();
+  }
+
+  private String setToJSON(Set<String> set, String key) {
+    StringBuilder json = new StringBuilder();
+    json.append("[{\"")
+        .append(key)
+        .append("\":[");
+    String prefix = "";
+    for (String e : set) {
+      json.append(prefix)
+          .append("\"")
+          .append(e)
+          .append("\"");
+      prefix = ",";
+    }
+    json.append("]}]");
+    return json.toString();
   }
 }
