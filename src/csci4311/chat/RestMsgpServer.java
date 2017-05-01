@@ -55,7 +55,7 @@ class RestMsgpServer {
     }
   }
 
-  void usersByGroup(HttpExchange exchange) throws IOException {
+  private void usersByGroup(HttpExchange exchange) throws IOException {
     String query = exchange.getRequestURI().getPath();
     String group = query.substring(query.lastIndexOf('/') + 1);
     Set<String> userSet = server.users(group);
@@ -66,7 +66,7 @@ class RestMsgpServer {
     }
   }
 
-  void addUser(HttpExchange exchange) throws IOException {
+  private void addUser(HttpExchange exchange) throws IOException {
     String query = exchange.getRequestURI().getPath();
     String group = query.substring(query.lastIndexOf('/') + 1);
     String body = getBody(exchange);
@@ -91,8 +91,18 @@ class RestMsgpServer {
     }
   }
 
-  void deleteUser(HttpExchange exchange) throws IOException {
-
+  private void deleteUser(HttpExchange exchange) throws IOException {
+    String query = exchange.getRequestURI().getPath();
+    String user = query.substring(query.lastIndexOf('/') + 1);
+    query = query.substring(0, query.lastIndexOf('/'));
+    String group = query.substring(query.lastIndexOf('/') + 1);
+    if (!server.groups().contains(group)) {
+      handle(exchange, 400);
+    } else if (!server.users(group).contains(user)) {
+      handle(exchange, 401);
+    } else {
+      handle(exchange, server.leave(user, group));
+    }
   }
 
   void history(HttpExchange exchange) throws IOException {
@@ -134,6 +144,7 @@ class RestMsgpServer {
     return json.toString();
   }
 
+  @SuppressWarnings("Duplicates")
   private String getBody(HttpExchange exchange) throws IOException {
     BufferedReader in = new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
     StringBuilder body = new StringBuilder();

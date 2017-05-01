@@ -148,6 +148,7 @@ public class  TextMsgpServer implements MsgpServer {
     }
   }
 
+  @SuppressWarnings("Duplicates")
   private String getBody(HttpExchange exchange) throws IOException {
     BufferedReader in = new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
     StringBuilder body = new StringBuilder();
