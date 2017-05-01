@@ -43,15 +43,24 @@ public class RestMsgpServer implements MsgpServer {
 
   @Override
   public void groups(HttpExchange exchange) throws IOException {
+    if (!exchange.getRequestMethod().equalsIgnoreCase("GET")) {
+      handle(exchange);
+    }
     handle(exchange, setToJSON(server.groups(), "groups"));
   }
 
   @Override
   public void users(HttpExchange exchange) throws IOException {
+    if (!exchange.getRequestMethod().equalsIgnoreCase("GET")) {
+      handle(exchange);
+    }
     handle(exchange, setToJSON(server.users(), "users"));
   }
 
   public void usersByGroup(HttpExchange exchange) throws IOException {
+    if (!exchange.getRequestMethod().equalsIgnoreCase("GET")) {
+      handle(exchange);
+    }
     String query = exchange.getRequestURI().getPath();
     String group = query.substring(query.lastIndexOf('/') + 1);
     handle(exchange, setToJSON(server.users(group), "users"));
@@ -60,6 +69,12 @@ public class RestMsgpServer implements MsgpServer {
   @Override
   public void history(HttpExchange exchange) throws IOException {
 
+  }
+
+  private void handle(HttpExchange exchange) throws IOException {
+    Headers responseHeaders = exchange.getResponseHeaders();
+    responseHeaders.set("Content-Type", "application/json");
+    exchange.sendResponseHeaders(404, 0);
   }
 
   private void handle(HttpExchange exchange, String json) throws IOException {
