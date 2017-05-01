@@ -125,10 +125,10 @@ public class ChatServer implements MessageServer {
     HttpServer restServer = HttpServer.create(new InetSocketAddress(restPort), 0);
     RestMsgpServer restMsgp = new RestMsgpServer(chatServer);
     restServer.createContext("/", restMsgp::root);
-    restServer.createContext("/group/", restMsgp::group);
-    restServer.createContext("/groups", restMsgp::groups);
     restServer.createContext("/users", restMsgp::users);
-    restServer.createContext("/history", restMsgp::history);
+    restServer.createContext("/groups", restMsgp::groups);
+    restServer.createContext("/group/", restMsgp::group);
+    restServer.createContext("/messages", restMsgp::messages);
     restServer.setExecutor(Executors.newCachedThreadPool());
     restServer.start();
     System.out.println("Server is listening on ports " + port + " and " + restPort + " (REST API)...");

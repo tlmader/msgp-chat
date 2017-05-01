@@ -7,7 +7,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Implements RESTful methods for sending and receiving of encoded messages.
@@ -105,7 +108,41 @@ class RestMsgpServer {
     }
   }
 
-  void history(HttpExchange exchange) throws IOException {
+  void messages(HttpExchange exchange) throws IOException {
+    if (exchange.getRequestMethod().equalsIgnoreCase("GET")) {
+      getMessages(exchange);
+    } else if (exchange.getRequestMethod().equalsIgnoreCase("POST")) {
+      postMessage(exchange);
+    } else {
+      handle(exchange, 404);
+    }
+  }
+
+  private void getMessages(HttpExchange exchange) throws IOException {
+    String query = exchange.getRequestURI().getPath();
+    String recipient = query.substring(query.lastIndexOf('/') + 1);
+    List<MsgpMessage> messages = new ArrayList<>();
+    if (recipient.startsWith("@")) {
+      if (!server.users().contains(recipient.substring(1))) {
+        handle(exchange, 401);
+        return;
+      }
+      for (String group : server.groups()) {
+        messages.addAll(server.history(group).stream()
+            .filter(x -> x.getFrom().equals(recipient.substring(1)))
+            .collect(Collectors.toList()));
+      }
+    } else {
+      if (!server.groups().contains(recipient)) {
+        handle(exchange, 400);
+        return;
+      }
+      messages = server.history(recipient);
+    }
+    handle(exchange, msgpToJSON(messages), 200);
+  }
+
+  private void postMessage(HttpExchange exchange) throws IOException {
 
   }
 
@@ -137,6 +174,29 @@ class RestMsgpServer {
             .append("\"")
             .append(e)
             .append("\"");
+        prefix = ",";
+      }
+    }
+    json.append("]}]");
+    return json.toString();
+  }
+
+  private String msgpToJSON(List<MsgpMessage> messages) {
+    StringBuilder json = new StringBuilder();
+    json.append("[{\"messages\":[");
+    String prefix = "";
+    if (messages != null) {
+      for (MsgpMessage m : messages) {
+        json.append(prefix)
+            .append("\"from: ")
+            .append(m.getFrom());
+        for (String to : m.getTo()) {
+          json.append("\r\nto: ")
+              .append(to);
+        }
+        json.append("\r\n")
+            .append(m.getMessage())
+            .append("\r\n\"");
         prefix = ",";
       }
     }
