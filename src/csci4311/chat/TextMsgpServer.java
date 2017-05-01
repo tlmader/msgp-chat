@@ -17,32 +17,32 @@ public class  TextMsgpServer implements MsgpServer {
   private ChatServer server = new ChatServer();
 
   public void connect(HttpExchange exchange) throws IOException {
-    handle(exchange, server.connect(getStringFromBody(exchange), new PrintStream(exchange.getResponseBody())));
+    handle(exchange, server.connect(getBody(exchange), new PrintStream(exchange.getResponseBody())));
   }
 
   @Override
   public void join(HttpExchange exchange) throws IOException {
-    String str;
-    if ((str = getStringFromBody(exchange)) != null) {
-      String[] strs = str.split("\\s+");
+    String body;
+    if ((body = getBody(exchange)) != null) {
+      String[] strs = body.split("\\s+");
       handle(exchange, strs.length > 3 ? server.join(strs[2], strs[3]) : 400);
     }
   }
 
   @Override
   public void leave(HttpExchange exchange) throws IOException {
-    String str;
-    if ((str = getStringFromBody(exchange)) != null) {
-      String[] strs = str.split("\\s+");
+    String body;
+    if ((body = getBody(exchange)) != null) {
+      String[] strs = body.split("\\s+");
       handle(exchange, strs.length > 3 ? server.leave(strs[2], strs[3]) : 400);
     }
   }
 
   @Override
   public void send(HttpExchange exchange) throws IOException {
-    String str;
-    if ((str = getStringFromBody(exchange)) != null) {
-      String[] lines = str.split("[\\r\\n]+");
+    String body;
+    if ((body = getBody(exchange)) != null) {
+      String[] lines = body.split("[\\r\\n]+");
       Set<String> to = new HashSet<>();
       String from = "", message = "";
       for (String line : lines) {
@@ -65,9 +65,9 @@ public class  TextMsgpServer implements MsgpServer {
 
   @Override
   public void users(HttpExchange exchange) throws IOException {
-    String str;
-    if ((str = getStringFromBody(exchange)) != null) {
-      String[] strs = str.split("\\s+");
+    String body;
+    if ((body = getBody(exchange)) != null) {
+      String[] strs = body.split("\\s+");
       if (strs.length > 2) {
         handle(exchange, server.users(strs[2]));
       } else {
@@ -78,9 +78,9 @@ public class  TextMsgpServer implements MsgpServer {
 
   @Override
   public void history(HttpExchange exchange) throws IOException {
-    String str;
-    if ((str = getStringFromBody(exchange)) != null) {
-      String[] strs = str.split("\\s+");
+    String body;
+    if ((body = getBody(exchange)) != null) {
+      String[] strs = body.split("\\s+");
       if (strs.length > 2) {
         handle(exchange, server.history(strs[2]), strs[2]);
       } else {
@@ -139,24 +139,18 @@ public class  TextMsgpServer implements MsgpServer {
     }
   }
 
-  private String getStringFromBody(HttpExchange exchange) throws IOException {
-    ObjectInputStream in = new ObjectInputStream(exchange.getRequestBody());
-    try {
-      return (String) in.readObject();
-    } catch (ClassNotFoundException e) {
-      e.printStackTrace();
+  private String getBody(HttpExchange exchange) throws IOException {
+    BufferedReader in = new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
+    StringBuilder body = new StringBuilder();
+    String line, prefix = "";
+    while ((line = in.readLine()) != null) {
+      body.append(prefix).append(line);
+      prefix = "\n";
+    }
+    if (body.length() > 0) {
+      return body.toString();
     }
     handle(exchange, 400);
-    return null;
-  }
-
-  private MsgpMessage getMessageFromBody(HttpExchange exchange) throws IOException {
-    ObjectInputStream in = new ObjectInputStream(exchange.getRequestBody());
-    try {
-      return (MsgpMessage) in.readObject();
-    } catch (ClassNotFoundException e) {
-      e.printStackTrace();
-    }
     return null;
   }
 }

@@ -30,8 +30,10 @@ public class TextMsgpClient implements MsgpClient {
         return "Error";
       }
       return "Joined #" + group + " with " + users.size() + " current members.";
+    } else if (code == 201) {
+      return "Already a member of #" + group + ".";
     }
-    return "Already a member of #" + group + ".";
+    return "Error";
   }
 
   @Override
@@ -130,16 +132,16 @@ public class TextMsgpClient implements MsgpClient {
     return connection;
   }
 
-  private HttpURLConnection createConnection(String route, Serializable obj) {
+  private HttpURLConnection createConnection(String route, String message) {
     HttpURLConnection connection = createConnection(route);
     if (connection == null) {
       return null;
     }
     try {
-      connection.setRequestProperty("Content-Length", "" + Integer.toString(obj.toString().getBytes().length));
+      connection.setRequestProperty("Content-Length", "" + Integer.toString(message.length()));
       connection.setDoOutput(true);
-      ObjectOutputStream wr = new ObjectOutputStream(connection.getOutputStream());
-      wr.writeObject(obj);
+      OutputStreamWriter wr = new OutputStreamWriter(connection.getOutputStream());
+      wr.write(message);
       wr.flush();
       wr.close();
     } catch (IOException e) {
