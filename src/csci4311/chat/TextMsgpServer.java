@@ -128,7 +128,7 @@ public class  TextMsgpServer implements MsgpServer {
       response.println("msgp send");
       response.println("from: " + m.getFrom());
       response.println("to: " + group);
-      response.println("\n" + m.getMessage() + "\n");
+      response.println("\r\n" + m.getMessage() + "\r\n");
     }
     response.close();
   }
@@ -155,7 +155,7 @@ public class  TextMsgpServer implements MsgpServer {
     String line, prefix = "";
     while ((line = in.readLine()) != null) {
       body.append(prefix).append(line);
-      prefix = "\n";
+      prefix = "\r\n";
     }
     if (body.length() > 0) {
       return body.toString();

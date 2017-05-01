@@ -19,7 +19,7 @@ public class CLIUserAgent implements UserAgent {
 
   @Override
   public void deliver(String message) {
-    out.println("\n" + message);
+    out.println("\r\n" + message);
     out.print("@" + user + " >> ");
     HttpURLConnection connection = client.connect(user);
     new DeliveryWorker(connection).start();

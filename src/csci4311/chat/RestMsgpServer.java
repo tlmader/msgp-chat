@@ -211,7 +211,7 @@ class RestMsgpServer {
     String line, prefix = "";
     while ((line = in.readLine()) != null) {
       body.append(prefix).append(line);
-      prefix = "\n";
+      prefix = "\r\n";
     }
     if (body.length() > 0) {
       return body.toString();

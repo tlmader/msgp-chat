@@ -45,15 +45,15 @@ public class TextMsgpClient implements MsgpClient {
   @Override
   public int send(MsgpMessage message) {
     StringBuilder out = new StringBuilder();
-    out.append("msgp send\nfrom: ")
+    out.append("msgp send\r\nfrom: ")
         .append(message.getFrom());
     for (String to : message.getTo()) {
-      out.append("\nto: ")
+      out.append("\r\nto: ")
           .append(to);
     }
-    out.append("\n\n")
+    out.append("\r\n")
         .append(message.getMessage())
-        .append("\n\n");
+        .append("\n");
     return getResponseCode(createConnection("send", out.toString()));
   }
 

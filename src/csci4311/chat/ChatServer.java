@@ -102,7 +102,7 @@ public class ChatServer implements MessageServer {
     ps.println("msgp send");
     ps.println("from: " + message.getFrom());
     ps.println("to: " + to);
-    ps.println("\n" + message.getMessage() + "\n");
+    ps.println("\r\n" + message.getMessage() + "\r\n");
     ps.close();
   }
 
@@ -110,6 +110,7 @@ public class ChatServer implements MessageServer {
     int port = args.length > 0 ? Integer.parseInt(args[0]) : 4311;
     int restPort = args.length > 1 ? Integer.parseInt(args[1]) : 8311;
     ChatServer chatServer = new ChatServer();
+    // Start text server
     HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
     MsgpServer msgp = new TextMsgpServer(chatServer);
     server.createContext("/", msgp::root);
@@ -122,6 +123,7 @@ public class ChatServer implements MessageServer {
     server.createContext("/history", msgp::history);
     server.setExecutor(Executors.newCachedThreadPool());
     server.start();
+    // Start REST API
     HttpServer restServer = HttpServer.create(new InetSocketAddress(restPort), 0);
     RestMsgpServer restMsgp = new RestMsgpServer(chatServer);
     restServer.createContext("/", restMsgp::root);

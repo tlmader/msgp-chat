@@ -29,7 +29,7 @@ public class ResponseBody {
         sb.append("400 Error");
         break;
     }
-    sb.append("\n");
+    sb.append("\r\n");
     sb.append(message);
     return sb.toString();
   }
