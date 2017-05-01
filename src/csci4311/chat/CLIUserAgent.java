@@ -35,16 +35,16 @@ public class CLIUserAgent implements UserAgent {
       String[] inputArr = input.split("\\s+");
       switch (inputArr[0]) {
         case "join":
-          out.println(inputArr.length == 2 ? client.join(user, inputArr[1]) : getUsage(inputArr[0]));
+          out.println(inputArr.length == 2 ? client.join(user, inputArr[1].replace("#", "")) : getUsage(inputArr[0]));
           break;
         case "leave":
-          out.println(inputArr.length == 2 ? client.leave(user, inputArr[1]) : getUsage(inputArr[0]));
+          out.println(inputArr.length == 2 ? client.leave(user, inputArr[1].replace("#", "")) : getUsage(inputArr[0]));
           break;
         case "groups":
           out.println(client.groups());
           break;
         case "users":
-          out.println(inputArr.length == 2 ? client.users(inputArr[1]) : getUsage(inputArr[0]));
+          out.println(inputArr.length == 2 ? client.users(inputArr[1].replace("#", "")) : getUsage(inputArr[0]));
           break;
         case "send":
           Set<String> to = new HashSet<>();
@@ -60,7 +60,7 @@ public class CLIUserAgent implements UserAgent {
           client.send(new MsgpMessage(user, to, message));
           break;
         case "history":
-          out.println(inputArr.length == 2 ? client.history(inputArr[1]) : getUsage(inputArr[0]));
+          out.println(inputArr.length == 2 ? client.history(inputArr[1].replace("#", "")) : getUsage(inputArr[0]));
           break;
       }
     }
