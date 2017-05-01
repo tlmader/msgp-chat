@@ -85,6 +85,12 @@ public class ChatServer implements MessageServer {
     return groupUsers.get(group);
   }
 
+  public Set<String> users() {
+    Set<String> allUsers = new HashSet<>();
+    groupUsers.values().forEach(allUsers::addAll);
+    return allUsers;
+  }
+
   @Override
   public List<MsgpMessage> history(String group) {
     return groupHistory.get(group);
@@ -104,8 +110,8 @@ public class ChatServer implements MessageServer {
 
   public static void main(String[] args) throws IOException {
     int port = args.length > 0 ? Integer.parseInt(args[0]) : 4311;
-    InetSocketAddress addr = new InetSocketAddress(port);
-    HttpServer server = HttpServer.create(addr, 0);
+    int restPort = args.length > 1 ? Integer.parseInt(args[1]) : 8311;
+    HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
     MsgpServer msgp = new TextMsgpServer();
     server.createContext("/", msgp::connect);
     server.createContext("/join", msgp::join);
@@ -116,6 +122,17 @@ public class ChatServer implements MessageServer {
     server.createContext("/history", msgp::history);
     server.setExecutor(Executors.newCachedThreadPool());
     server.start();
-    System.out.println("Server is listening on port " + port + "...");
+    HttpServer restServer = HttpServer.create(new InetSocketAddress(restPort), 0);
+    MsgpServer restMsgp = new RestMsgpServer();
+    restServer.createContext("/", restMsgp::connect);
+    restServer.createContext("/join", restMsgp::join);
+    restServer.createContext("/leave", restMsgp::leave);
+    restServer.createContext("/send", restMsgp::send);
+    restServer.createContext("/groups", restMsgp::groups);
+    restServer.createContext("/users", restMsgp::users);
+    restServer.createContext("/history", restMsgp::history);
+    restServer.setExecutor(Executors.newCachedThreadPool());
+    restServer.start();
+    System.out.println("Server is listening on ports " + port + " and " + restPort + " (REST API)...");
   }
 }
