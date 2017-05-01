@@ -22,6 +22,11 @@ public class RestMsgpServer implements MsgpServer {
   }
 
   @Override
+  public void root(HttpExchange exchange) throws IOException {
+    handle(exchange, 404);
+  }
+
+  @Override
   public void connect(HttpExchange exchange) throws IOException {
 
   }
@@ -44,7 +49,8 @@ public class RestMsgpServer implements MsgpServer {
   @Override
   public void groups(HttpExchange exchange) throws IOException {
     if (!exchange.getRequestMethod().equalsIgnoreCase("GET")) {
-      handle(exchange);
+      handle(exchange, 404);
+      return;
     }
     handle(exchange, setToJSON(server.groups(), "groups"));
   }
@@ -52,18 +58,25 @@ public class RestMsgpServer implements MsgpServer {
   @Override
   public void users(HttpExchange exchange) throws IOException {
     if (!exchange.getRequestMethod().equalsIgnoreCase("GET")) {
-      handle(exchange);
+      handle(exchange, 404);
+      return;
     }
     handle(exchange, setToJSON(server.users(), "users"));
   }
 
   public void usersByGroup(HttpExchange exchange) throws IOException {
     if (!exchange.getRequestMethod().equalsIgnoreCase("GET")) {
-      handle(exchange);
+      handle(exchange, 404);
+      return;
     }
     String query = exchange.getRequestURI().getPath();
     String group = query.substring(query.lastIndexOf('/') + 1);
-    handle(exchange, setToJSON(server.users(group), "users"));
+    Set<String> userSet = server.users(group);
+    if (userSet != null) {
+      handle(exchange, setToJSON(server.users(group), "users"));
+    } else {
+      handle(exchange, 400);
+    }
   }
 
   @Override
@@ -71,10 +84,11 @@ public class RestMsgpServer implements MsgpServer {
 
   }
 
-  private void handle(HttpExchange exchange) throws IOException {
+  private void handle(HttpExchange exchange, int code) throws IOException {
     Headers responseHeaders = exchange.getResponseHeaders();
-    responseHeaders.set("Content-Type", "application/json");
-    exchange.sendResponseHeaders(404, 0);
+    responseHeaders.set("Content-Type", "application/x-www-form-urlencoded");
+    exchange.sendResponseHeaders(code, 0);
+    new PrintStream(exchange.getResponseBody()).close();
   }
 
   private void handle(HttpExchange exchange, String json) throws IOException {

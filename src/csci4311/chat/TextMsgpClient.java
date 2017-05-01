@@ -18,7 +18,7 @@ public class TextMsgpClient implements MsgpClient {
 
   @Override
   public HttpURLConnection connect(String user) {
-    return createConnection("", user);
+    return createConnection("connect", user);
   }
 
   @Override

@@ -11,6 +11,8 @@ import java.io.IOException;
  */
 public interface MsgpServer {
 
+  void root(HttpExchange exchange) throws IOException;
+
   void connect(HttpExchange exchange) throws IOException;
 
   /**

@@ -112,7 +112,8 @@ public class ChatServer implements MessageServer {
     ChatServer chatServer = new ChatServer();
     HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
     MsgpServer msgp = new TextMsgpServer(chatServer);
-    server.createContext("/", msgp::connect);
+    server.createContext("/", msgp::root);
+    server.createContext("/connect", msgp::connect);
     server.createContext("/join", msgp::join);
     server.createContext("/leave", msgp::leave);
     server.createContext("/send", msgp::send);
@@ -123,7 +124,7 @@ public class ChatServer implements MessageServer {
     server.start();
     HttpServer restServer = HttpServer.create(new InetSocketAddress(restPort), 0);
     RestMsgpServer restMsgp = new RestMsgpServer(chatServer);
-    restServer.createContext("/", restMsgp::connect);
+    restServer.createContext("/", restMsgp::root);
     restServer.createContext("/join", restMsgp::join);
     restServer.createContext("/leave", restMsgp::leave);
     restServer.createContext("/send", restMsgp::send);

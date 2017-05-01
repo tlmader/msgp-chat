@@ -25,6 +25,11 @@ public class  TextMsgpServer implements MsgpServer {
   }
 
   @Override
+  public void root(HttpExchange exchange) throws IOException {
+    handle(exchange, 404);
+  }
+
+  @Override
   public void join(HttpExchange exchange) throws IOException {
     String body;
     if ((body = getBody(exchange)) != null) {
