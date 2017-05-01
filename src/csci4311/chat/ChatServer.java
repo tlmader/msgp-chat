@@ -122,13 +122,14 @@ public class ChatServer implements MessageServer {
     server.setExecutor(Executors.newCachedThreadPool());
     server.start();
     HttpServer restServer = HttpServer.create(new InetSocketAddress(restPort), 0);
-    MsgpServer restMsgp = new RestMsgpServer(chatServer);
+    RestMsgpServer restMsgp = new RestMsgpServer(chatServer);
     restServer.createContext("/", restMsgp::connect);
     restServer.createContext("/join", restMsgp::join);
     restServer.createContext("/leave", restMsgp::leave);
     restServer.createContext("/send", restMsgp::send);
     restServer.createContext("/groups", restMsgp::groups);
     restServer.createContext("/users", restMsgp::users);
+    restServer.createContext("/group/", restMsgp::usersByGroup);
     restServer.createContext("/history", restMsgp::history);
     restServer.setExecutor(Executors.newCachedThreadPool());
     restServer.start();

@@ -51,6 +51,12 @@ public class RestMsgpServer implements MsgpServer {
     handle(exchange, setToJSON(server.users(), "users"));
   }
 
+  public void usersByGroup(HttpExchange exchange) throws IOException {
+    String query = exchange.getRequestURI().getPath();
+    String group = query.substring(query.lastIndexOf('/') + 1);
+    handle(exchange, setToJSON(server.users(group), "users"));
+  }
+
   @Override
   public void history(HttpExchange exchange) throws IOException {
 
@@ -71,12 +77,14 @@ public class RestMsgpServer implements MsgpServer {
         .append(key)
         .append("\":[");
     String prefix = "";
-    for (String e : set) {
-      json.append(prefix)
-          .append("\"")
-          .append(e)
-          .append("\"");
-      prefix = ",";
+    if (set != null) {
+      for (String e : set) {
+        json.append(prefix)
+            .append("\"")
+            .append(e)
+            .append("\"");
+        prefix = ",";
+      }
     }
     json.append("]}]");
     return json.toString();
