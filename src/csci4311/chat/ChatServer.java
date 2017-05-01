@@ -103,7 +103,7 @@ public class ChatServer implements MessageServer {
   }
 
   public static void main(String[] args) throws IOException {
-    int port = args.length > 0 ? Integer.parseInt(args[0]) : 1337;
+    int port = args.length > 0 ? Integer.parseInt(args[0]) : 4311;
     InetSocketAddress addr = new InetSocketAddress(port);
     HttpServer server = HttpServer.create(addr, 0);
     MsgpServer msgp = new TextMsgpServer();

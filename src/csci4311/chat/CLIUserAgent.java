@@ -103,7 +103,7 @@ public class CLIUserAgent implements UserAgent {
     CLIUserAgent agent = new CLIUserAgent();
     agent.user = args.length > 0 ? args[0] : "tlmader";
     TextMsgpClient.server = args.length > 1 ? args[1] : "http://localhost";
-    TextMsgpClient.port = args.length > 2 ? args[2] : "1337";
+    TextMsgpClient.port = args.length > 2 ? args[2] : "4311";
     agent.start();
   }
 }
