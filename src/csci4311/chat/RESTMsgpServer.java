@@ -133,7 +133,7 @@ class RESTMsgpServer {
       }
       messages = server.history(recipient);
     }
-    handle(exchange, msgpToJSON(messages), 200);
+    handle(exchange, msgpToJSON(messages, recipient.startsWith("@") ? recipient : "#" + recipient), 200);
   }
 
   void message(HttpExchange exchange) throws IOException {
@@ -178,7 +178,7 @@ class RESTMsgpServer {
     return json.toString();
   }
 
-  private String msgpToJSON(List<MsgpMessage> messages) {
+  private String msgpToJSON(List<MsgpMessage> messages, String recipient) {
     StringBuilder json = new StringBuilder();
     json.append("[{\"messages\":[");
     String prefix = "";
@@ -186,12 +186,10 @@ class RESTMsgpServer {
       for (MsgpMessage m : messages) {
         json.append(prefix)
             .append("\"from: ")
-            .append(m.getFrom());
-        for (String to : m.getTo()) {
-          json.append("\r\nto: ")
-              .append(to);
-        }
-        json.append("\r\n")
+            .append(m.getFrom())
+            .append("\r\nto: ")
+            .append(recipient)
+            .append("\r\n")
             .append(m.getMessage())
             .append("\r\n\"");
         prefix = ",";

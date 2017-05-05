@@ -21,7 +21,8 @@ public class  TextMsgpServer implements MsgpServer {
   }
 
   public void connect(HttpExchange exchange) throws IOException {
-    handle(exchange, server.connect(getBody(exchange), new PrintStream(exchange.getResponseBody())));
+    server.connect(getBody(exchange), new PrintStream(exchange.getResponseBody()));
+    handleWithoutClose(exchange);
   }
 
   @Override
@@ -91,6 +92,10 @@ public class  TextMsgpServer implements MsgpServer {
     new PrintStream(exchange.getResponseBody()).close();
   }
 
+  private void handleWithoutClose(HttpExchange exchange) throws IOException {
+    exchange.sendResponseHeaders(200, 0);
+  }
+
   private void handle(HttpExchange exchange, Set<String> set) throws IOException {
     Headers responseHeaders = exchange.getResponseHeaders();
     responseHeaders.set("Content-Type", "text/plain");
@@ -116,7 +121,7 @@ public class  TextMsgpServer implements MsgpServer {
     for (MsgpMessage m : messages) {
       response.println("msgp send");
       response.println("from: " + m.getFrom());
-      response.println("to: " + group);
+      response.println("to: #" + group);
       response.println("\r\n" + m.getMessage() + "\r\n");
     }
     response.close();
