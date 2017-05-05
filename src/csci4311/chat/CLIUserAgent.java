@@ -3,7 +3,10 @@ package csci4311.chat;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Scanner;
+import java.util.Set;
 
 import static java.lang.System.out;
 
@@ -14,8 +17,12 @@ import static java.lang.System.out;
  */
 public class CLIUserAgent implements UserAgent {
 
-  private MsgpClient client = new TextMsgpClient();
+  private MsgpClient client;
   private String user;
+
+  public CLIUserAgent(MsgpClient client) {
+    this.client = client;
+  }
 
   @Override
   public void deliver(String message) {
@@ -100,10 +107,10 @@ public class CLIUserAgent implements UserAgent {
   }
 
   public static void main(String[] args) {
-    CLIUserAgent agent = new CLIUserAgent();
+    CLIUserAgent agent = new CLIUserAgent(new TextMsgpClient(
+        args.length > 1 ? args[1] : "http://localhost",
+        args.length > 2 ? args[2] : "4311"));
     agent.user = args.length > 0 ? args[0] : "tlmader";
-    TextMsgpClient.server = args.length > 1 ? args[1] : "http://localhost";
-    TextMsgpClient.port = args.length > 2 ? args[2] : "4311";
     agent.start();
   }
 }

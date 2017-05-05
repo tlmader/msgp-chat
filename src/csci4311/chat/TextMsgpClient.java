@@ -1,6 +1,9 @@
 package csci4311.chat;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -13,8 +16,13 @@ import java.util.List;
  */
 public class TextMsgpClient implements MsgpClient {
 
-  static String server = "http://localhost";
-  static String port = "1337";
+  private String server;
+  private String port;
+
+  TextMsgpClient(String server, String port) {
+    this.server = server;
+    this.port = port;
+  }
 
   @Override
   public HttpURLConnection connect(String user) {
