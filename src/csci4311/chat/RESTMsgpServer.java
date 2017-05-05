@@ -19,11 +19,11 @@ import java.util.stream.Collectors;
  * @author Ted Mader
  * @since 2017-04-30
  */
-class RestMsgpServer {
+class RESTMsgpServer {
 
   private final ChatServer server;
 
-  RestMsgpServer(ChatServer server) {
+  RESTMsgpServer(ChatServer server) {
     this.server = server;
   }
 

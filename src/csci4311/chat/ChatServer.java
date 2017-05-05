@@ -127,7 +127,7 @@ public class ChatServer implements MessageServer {
     server.start();
     // Start REST API
     HttpServer restServer = HttpServer.create(new InetSocketAddress(restPort), 0);
-    RestMsgpServer restMsgp = new RestMsgpServer(chatServer);
+    RESTMsgpServer restMsgp = new RESTMsgpServer(chatServer);
     restServer.createContext("/", restMsgp::root);
     restServer.createContext("/users", restMsgp::users);
     restServer.createContext("/groups", restMsgp::groups);

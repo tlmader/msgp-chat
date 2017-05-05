@@ -17,8 +17,8 @@ import static java.lang.System.out;
  */
 public class CLIUserAgent implements UserAgent {
 
+  protected String user;
   private MsgpClient client;
-  private String user;
 
   public CLIUserAgent(MsgpClient client) {
     this.client = client;
@@ -32,7 +32,7 @@ public class CLIUserAgent implements UserAgent {
     new DeliveryWorker(connection).start();
   }
 
-  private void start() {
+  void start() {
     HttpURLConnection connection = client.connect(user);
     new DeliveryWorker(connection).start();
     Scanner sc = new Scanner(System.in);
