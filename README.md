@@ -216,8 +216,6 @@ Server always precedes its answer (if any) with one of three reply code, single-
   
 ## REST API
 
-Resources:
-
 ### GET `/users`
 Enumerate the users currently logged in.
 
