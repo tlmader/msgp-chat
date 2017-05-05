@@ -1,0 +1,240 @@
+{
+	"variables": [],
+	"info": {
+		"name": "msgp-chat",
+		"_postman_id": "bf4f7907-302c-8df9-81e2-0bd6abee0765",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "localhost:4311/join",
+			"request": {
+				"url": "localhost:4311/join",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "msgp join tlmader team"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:4311/leave",
+			"request": {
+				"url": "localhost:4311/leave",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "msgp leave tlmader team"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:4311/groups",
+			"request": {
+				"url": "localhost:4311/groups",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "msgp users team"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:4311/users",
+			"request": {
+				"url": "localhost:4311/users",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "msgp users team"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:4311/send",
+			"request": {
+				"url": "localhost:4311/send",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "msgp send\nfrom: tlmader\nto: #team\n\nA message using the TextMsgpServer!\n"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:4311/history",
+			"request": {
+				"url": "localhost:4311/history",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "msgp history team"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8311/users",
+			"request": {
+				"url": "localhost:8311/users",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8311/groups",
+			"request": {
+				"url": "localhost:8311/groups",
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "user=tlmader"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8311/group/team",
+			"request": {
+				"url": "localhost:8311/group/team",
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "user=tlmader"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8311/group/team",
+			"request": {
+				"url": "localhost:8311/group/team",
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "user=tlmader"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8311/group/team/tlmader",
+			"request": {
+				"url": "localhost:8311/group/team/tlmader",
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "user=tlmader"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8311/messages/team",
+			"request": {
+				"url": "localhost:8311/messages/team",
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "user=tlmader"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8311/messages/@tlmader",
+			"request": {
+				"url": "localhost:8311/messages/@tlmader",
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "user=tlmader"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8311/message",
+			"request": {
+				"url": "localhost:8311/message",
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "msgp send\nfrom: tlmader\nto: #team\n\nA message using the REST API!\n"
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}
