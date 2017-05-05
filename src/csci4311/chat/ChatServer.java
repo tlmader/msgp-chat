@@ -133,6 +133,7 @@ public class ChatServer implements MessageServer {
     restServer.createContext("/groups", restMsgp::groups);
     restServer.createContext("/group/", restMsgp::group);
     restServer.createContext("/messages", restMsgp::messages);
+    restServer.createContext("/message", restMsgp::message);
     restServer.setExecutor(Executors.newCachedThreadPool());
     restServer.start();
     System.out.println("Server is listening on ports " + port + " and " + restPort + " (REST API)...");

@@ -110,16 +110,9 @@ class RestMsgpServer {
   }
 
   void messages(HttpExchange exchange) throws IOException {
-    if (exchange.getRequestMethod().equalsIgnoreCase("GET")) {
-      getMessages(exchange);
-    } else if (exchange.getRequestMethod().equalsIgnoreCase("POST")) {
-      postMessage(exchange);
-    } else {
+    if (!exchange.getRequestMethod().equalsIgnoreCase("GET")) {
       root(exchange);
     }
-  }
-
-  private void getMessages(HttpExchange exchange) throws IOException {
     String query = exchange.getRequestURI().getPath();
     String recipient = query.substring(query.lastIndexOf('/') + 1);
     List<MsgpMessage> messages = new ArrayList<>();
@@ -143,7 +136,10 @@ class RestMsgpServer {
     handle(exchange, msgpToJSON(messages), 200);
   }
 
-  private void postMessage(HttpExchange exchange) throws IOException {
+  void message(HttpExchange exchange) throws IOException {
+    if (!exchange.getRequestMethod().equalsIgnoreCase("POST")) {
+      root(exchange);
+    }
     handle(exchange, server.send(getMessageFromBody(exchange)));
   }
 
@@ -217,7 +213,7 @@ class RestMsgpServer {
     if (body.length() > 0) {
       return body.toString();
     }
-    handle(exchange, 400);
+    handle(exchange, 500);
     return null;
   }
 
