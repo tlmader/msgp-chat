@@ -4,6 +4,8 @@
 
 A simple chat application that consists of client and server components, which communicate via the *MsgP* protocol and a REST API. Both are specified below.
 
+Test using [Postman](https://www.getpostman.com/) with this [collection](https://github.com/Tlmader/msgp-chat/blob/master/msgp-chat.postman_collection.json)!
+
 The basic functionality of the server is as follows:
 * It maintains a non-persistent list of chat groups (groups are created on demand and are not persistent across server executions.
 * It allows clients to join any of the existing groups, or create a new one implicitly by requesting to join a group that does not exist.
