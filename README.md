@@ -2,7 +2,7 @@
 
 **Computer Networks and Telecommunications Programming Assignments 2 and 3**
 
-A simple chat application that consists of client and server components, which communicate via the *MsgP* protocol specified below.
+A simple chat application that consists of client and server components, which communicate via the *MsgP* protocol and a REST API. Both are specified below.
 
 The basic functionality of the server is as follows:
 * It maintains a non-persistent list of chat groups (groups are created on demand and are not persistent across server executions.
@@ -14,9 +14,9 @@ The basic functionality of the server is as follows:
 
 Client: `java csci4311.chat.CLIUserAgent <user> <server> [<port>]`
 
-Server: `java csci4311.chat.ChatServer [<port>]`
+Server: `java csci4311.chat.ChatServer [<port>] [<rest_port>]`
 
-The default port (if not specified) is 4311.
+The default ports (if not specified) are 4311 and 8311 (REST API).
 
 ## User Agent
 
@@ -213,3 +213,146 @@ Server always precedes its answer (if any) with one of three reply code, single-
     msgp 200 OK
     msgp 201 No result
     msgp 400 Error
+  
+## REST API
+
+Resources:
+
+### GET `/users`
+Enumerate the users currently logged in.
+
+Reply codes:
+* `200` success
+
+Returns an array users, empty JSON object {} if none.
+
+Example (CLI) invocation:
+
+    curl "http://<server>:<port>/users"
+
+Response body:
+
+    {
+      "users": [
+        "alice",
+        "bob",
+        "charlie"
+      ]
+    }
+    
+### GET `/groups`
+Enumerate the currently available groups.
+
+Reply codes:
+* `200` success
+
+Returns a list (array) of available groups, empty JSON object {} if none.
+
+Example invocation:
+
+    curl "http://<server>:<port>/groups"
+
+Response body:
+
+    {
+      "groups": [
+        "4311",
+        "5311"
+      ]
+    }
+
+### GET `/group/<group_id>`
+Enumerate the membership of the given group.
+
+Reply codes:
+* `200` success
+* `400` no such group
+
+Returns a list (array) of users in the group, empty JSON object {} if none.
+
+Example invocation:
+
+    curl "http://<server>:<port>/group/4311"
+
+Response body:
+
+    {
+      "users": [
+        "alice",
+        "bob"
+      ]
+    }
+  
+### POST `/group/<group_id>`
+Add a user to a group (join). If the groups does not exist, it gets created.
+
+Reply codes:
+
+* `200` success, user added to existing group
+* `201` success, user added to a newly created group
+
+Returns the list of current users in the group.
+
+Example invocation:
+
+    curl –d "user=alice" "http://<server>:<port>/4311
+    
+Response body:
+
+    {
+      "users": [
+        "alice"
+      ]
+    }
+
+### DELETE `/group/<group_id>/<user_id>`
+Remove a user from a group (leave).
+
+Reply codes:
+* `200` success;
+* `400` no such group; o 401no such user.
+
+Returns the remaining group membership.
+
+Example invocation:
+
+    curl –X DELETE "http://<server>:<port>/group/4311/alice"
+    
+### GET `/messages/<group_id|@user_id>`
+Enumerate the messages sent to the given group, or user.
+
+Reply codes:
+* `200` success;
+* `400` no such group
+* `401` no such user
+
+Returns a list (array) of messages sent to the given group, or user; each returned message is an MsgP-encoded string.
+
+Example invocations:
+
+    "http://<server>:<port>/messages/4311" —> curl "http://<server>:<port>/messages/@alice"
+
+Response body:
+
+    {
+      "messages": [
+        "from: alice<cr><lf>to: #4311<cr><lf>hello everyone!<cr><lf>",
+        "from: bob<cr><lf>to: #4311<cr><lf>sorry for being late!<cr><lf>"
+      ]
+    }
+    
+### POST `/message`
+Posts a new message with the given MsgP-encoded content. The server should parse the text for users and group designated by the `@` and `#` signs, respectively.
+
+Reply codes:
+* 200 success
+* 400 no such group
+* 401 no such user
+
+Returns an empty JSON object.
+
+Example invocation:
+
+    curl --data @<message_filename> "http://<server>:<port>/message
+
+<message_filename> contains the msgp message.
