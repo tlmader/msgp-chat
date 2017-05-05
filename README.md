@@ -345,9 +345,9 @@ Response body:
 Posts a new message with the given MsgP-encoded content. The server should parse the text for users and group designated by the `@` and `#` signs, respectively.
 
 Reply codes:
-* 200 success
-* 400 no such group
-* 401 no such user
+* `200` success
+* `400` no such group
+* `401` no such user
 
 Returns an empty JSON object.
 
@@ -355,4 +355,4 @@ Example invocation:
 
     curl --data @<message_filename> "http://<server>:<port>/message
 
-<message_filename> contains the msgp message.
+`<message_filename>` contains the msgp message.
