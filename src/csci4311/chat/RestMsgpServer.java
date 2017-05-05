@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -32,7 +33,7 @@ class RestMsgpServer {
 
   void groups(HttpExchange exchange) throws IOException {
     if (!exchange.getRequestMethod().equalsIgnoreCase("GET")) {
-      handle(exchange, 404);
+      root(exchange);
       return;
     }
     handle(exchange, setToJSON(server.groups(), "groups"), 200);
@@ -40,7 +41,7 @@ class RestMsgpServer {
 
   void users(HttpExchange exchange) throws IOException {
     if (!exchange.getRequestMethod().equalsIgnoreCase("GET")) {
-      handle(exchange, 404);
+      root(exchange);
       return;
     }
     handle(exchange, setToJSON(server.users(), "users"), 200);
@@ -54,7 +55,7 @@ class RestMsgpServer {
     } else if (exchange.getRequestMethod().equalsIgnoreCase("DELETE")) {
       deleteUser(exchange);
     } else {
-      handle(exchange, 404);
+      root(exchange);
     }
   }
 
@@ -114,7 +115,7 @@ class RestMsgpServer {
     } else if (exchange.getRequestMethod().equalsIgnoreCase("POST")) {
       postMessage(exchange);
     } else {
-      handle(exchange, 404);
+      root(exchange);
     }
   }
 
@@ -143,7 +144,7 @@ class RestMsgpServer {
   }
 
   private void postMessage(HttpExchange exchange) throws IOException {
-
+    handle(exchange, server.send(getMessageFromBody(exchange)));
   }
 
   private void handle(HttpExchange exchange, int code) throws IOException {
@@ -218,5 +219,22 @@ class RestMsgpServer {
     }
     handle(exchange, 400);
     return null;
+  }
+
+  @SuppressWarnings("Duplicates")
+  private MsgpMessage getMessageFromBody(HttpExchange exchange) throws IOException {
+    BufferedReader in = new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
+    Set<String> to = new HashSet<>();
+    String line, from = "", message = "";
+    while ((line = in.readLine()) != null) {
+      if (line.startsWith("to: ")) {
+        to.add(line.substring(4));
+      } else if (line.startsWith("from: ")) {
+        from = line.substring(6);
+      } else {
+        message = line;
+      }
+    }
+    return new MsgpMessage(from, to, message);
   }
 }

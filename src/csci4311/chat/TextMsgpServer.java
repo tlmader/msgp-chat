@@ -31,8 +31,8 @@ public class  TextMsgpServer implements MsgpServer {
 
   @Override
   public void join(HttpExchange exchange) throws IOException {
-    String body;
-    if ((body = getBody(exchange)) != null) {
+    String body = getBody(exchange);
+    if (body != null) {
       String[] strs = body.split("\\s+");
       handle(exchange, strs.length > 3 ? server.join(strs[2], strs[3]) : 400);
     }
@@ -40,8 +40,8 @@ public class  TextMsgpServer implements MsgpServer {
 
   @Override
   public void leave(HttpExchange exchange) throws IOException {
-    String body;
-    if ((body = getBody(exchange)) != null) {
+    String body = getBody(exchange);
+    if (body != null) {
       String[] strs = body.split("\\s+");
       handle(exchange, strs.length > 3 ? server.leave(strs[2], strs[3]) : 400);
     }
@@ -49,21 +49,9 @@ public class  TextMsgpServer implements MsgpServer {
 
   @Override
   public void send(HttpExchange exchange) throws IOException {
-    String body;
-    if ((body = getBody(exchange)) != null) {
-      String[] lines = body.split("[\\r\\n]+");
-      Set<String> to = new HashSet<>();
-      String from = "", message = "";
-      for (String line : lines) {
-        if (line.startsWith("to: ")) {
-          to.add(line.substring(4));
-        } else if (line.startsWith("from: ")) {
-          from = line.substring(6);
-        } else {
-          message = line;
-        }
-      }
-      handle(exchange, server.send(new MsgpMessage(from, to, message)));
+    MsgpMessage message = getMessageFromBody(exchange);
+    if (message != null) {
+      handle(exchange, server.send(message));
     }
   }
 
@@ -74,13 +62,13 @@ public class  TextMsgpServer implements MsgpServer {
 
   @Override
   public void users(HttpExchange exchange) throws IOException {
-    String body;
-    if ((body = getBody(exchange)) != null) {
+    String body = getBody(exchange);
+    if (body != null) {
       String[] strs = body.split("\\s+");
       if (strs.length > 2) {
         handle(exchange, server.users(strs[2]));
       } else {
-        handle(exchange, 400);
+        handle(exchange, 500);
       }
     }
   }
@@ -93,13 +81,14 @@ public class  TextMsgpServer implements MsgpServer {
       if (strs.length > 2) {
         handle(exchange, server.history(strs[2]), strs[2]);
       } else {
-        handle(exchange, 400);
+        handle(exchange, 500);
       }
     }
   }
 
   private void handle(HttpExchange exchange, int code) throws IOException {
     exchange.sendResponseHeaders(code, 0);
+    new PrintStream(exchange.getResponseBody()).close();
   }
 
   private void handle(HttpExchange exchange, Set<String> set) throws IOException {
@@ -160,7 +149,24 @@ public class  TextMsgpServer implements MsgpServer {
     if (body.length() > 0) {
       return body.toString();
     }
-    handle(exchange, 400);
+    handle(exchange, 500);
     return null;
+  }
+
+  @SuppressWarnings("Duplicates")
+  private MsgpMessage getMessageFromBody(HttpExchange exchange) throws IOException {
+    BufferedReader in = new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
+    Set<String> to = new HashSet<>();
+    String line, from = "", message = "";
+    while ((line = in.readLine()) != null) {
+      if (line.startsWith("to: ")) {
+        to.add(line.substring(4));
+      } else if (line.startsWith("from: ")) {
+        from = line.substring(6);
+      } else {
+        message = line;
+      }
+    }
+    return new MsgpMessage(from, to, message);
   }
 }

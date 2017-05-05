@@ -28,7 +28,7 @@ public class ChatServer implements MessageServer {
   @Override
   public int join(String user, String group) {
     if (!userStreams.containsKey(user)) {
-      return 400;
+      userStreams.put(user, null);
     }
     if (!groupUsers.containsKey(group)) {
       groupUsers.put(group, new HashSet<>());
@@ -54,12 +54,14 @@ public class ChatServer implements MessageServer {
   @Override
   public int send(MsgpMessage message) {
     if (!userStreams.containsKey(message.getFrom())) {
-      return 400;
+      userStreams.put(message.getFrom(), null);
     }
     for (String to : message.getTo()) {
-      if ((to.startsWith("@") && !userStreams.containsKey(to.substring(1))) ||
-          (to.startsWith("#") && !groupUsers.containsKey(to.substring(1)))) {
+      if (to.startsWith("#") && !groupUsers.containsKey(to.substring(1))) {
         return 400;
+      }
+      if (to.startsWith("@") && !userStreams.containsKey(to.substring(1))) {
+        return 401;
       }
     }
     for (String to : message.getTo()) {
